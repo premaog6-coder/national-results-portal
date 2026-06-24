@@ -20,6 +20,11 @@
             --danger-hover: #b91c1c;
             --warn: #d97706;
             --success: #166534;
+            
+            --student-name-color: #16a34a; 
+            --status-passed: #16a34a;
+            --status-failed: #dc2626;
+            --points-color: #16a34a;
         }
 
         * {
@@ -39,324 +44,202 @@
             padding: 20px;
         }
 
-        /* 5-Second Intro Splash Screen */
         #intro-splash-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #0369a1;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
             text-align: center;
-            animation: fadeOutSplash 1s ease-in-out forwards;
-            animation-delay: 5s;
+            background: #000;
+            animation: fadeOutSplash 0.5s ease-in-out forwards; animation-delay: 5s;
+            overflow: hidden;
+        }
+
+        #intro-splash-screen::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            animation: rotateSplashFiveSeconds 4s infinite linear;
+        }
+
+        .splash-content-wrapper {
+            position: relative;
+            z-index: 2;
+            mix-blend-mode: difference; 
+            color: #ffffff;
         }
 
         #intro-splash-screen h1 {
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 36px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
+            font-family: 'Times New Roman', Times, serif; font-size: 46px;
+            font-weight: bold; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase;
         }
 
-        #intro-splash-screen p {
-            font-size: 13px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            opacity: 0.8;
+        #intro-splash-screen p { 
+            font-size: 16px; letter-spacing: 4px; text-transform: uppercase; opacity: 0.9;
         }
 
-        @keyframes fadeOutSplash {
-            to { opacity: 0; visibility: hidden; pointer-events: none; }
+        @keyframes rotateSplashFiveSeconds {
+            0%, 24.9% { background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80'); }
+            25%, 49.9% { background-image: url('https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=1200&q=80'); }
+            50%, 74.9% { background-image: url('https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1200&q=80'); }
+            75%, 100% { background-image: url('https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80'); }
         }
+
+        @keyframes fadeOutSplash { to { opacity: 0; visibility: hidden; pointer-events: none; } }
 
         .container {
-            width: 100%;
-            max-width: 850px;
-            background: var(--surface);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            margin: auto;
+            width: 100%; max-width: 850px; background: var(--surface);
+            padding: 30px; border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); margin: auto;
         }
 
         .hidden { display: none !important; }
 
         .nav-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;
         }
 
         .nav-btn {
-            background: none;
-            color: var(--text-muted);
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 6px 12px;
-            font-size: 15px;
-            outline: none;
+            background: none; color: var(--text-muted); border: none;
+            font-weight: 600; cursor: pointer; padding: 6px 12px; font-size: 15px; outline: none;
         }
 
-        .nav-btn.active {
-            color: var(--primary);
-            border-bottom: 3px solid var(--primary);
-        }
+        .nav-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
 
         h2, h3 { margin-bottom: 16px; color: var(--primary); text-align: center; }
         
         .form-group { margin-bottom: 16px; }
         label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 14px; }
         input, select {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 16px;
-            outline: none;
+            width: 100%; padding: 10px 14px; border: 1px solid var(--border);
+            border-radius: 6px; font-size: 16px; outline: none;
         }
 
-        .form-row-two {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
+        .form-row-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .form-row-three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+
+        .live-counter-strip {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+            background: #f1f5f9; padding: 12px; border-radius: 6px;
+            margin-bottom: 16px; border: 1px dashed var(--border);
+        }
+        .counter-box { text-align: center; font-weight: bold; font-size: 14px; color: var(--text-muted); }
+        .counter-box span { color: var(--primary); font-size: 16px; display: block; }
+
+        .school-identity-header-wrapper {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 12px; margin-bottom: 20px; border-bottom: 3px double var(--border); padding-bottom: 20px;
         }
 
-        .form-row-three {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
+        .school-header-text-container { text-align: center; width: 100%; }
+        .school-header-text-container h2 { text-align: center; margin-bottom: 6px; }
 
-        .class-dashboard-tabs {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+        .class-dashboard-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
 
         .tab-btn {
-            padding: 12px;
-            background: #e2e8f0;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
+            padding: 12px; background: #e2e8f0; border: 1px solid var(--border);
+            border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center;
         }
 
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary-hover);
-        }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary-hover); }
 
         .roster-container {
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 25px;
-            max-height: 350px;
-            overflow-y: auto;
+            background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+            padding: 15px; margin-bottom: 25px; max-height: 250px; overflow-y: auto;
         }
 
-        .roster-item {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            padding: 14px;
-        }
-
-        .roster-main-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 1px dashed #e2e8f0;
-            padding-bottom: 8px;
-            margin-bottom: 8px;
-        }
-
+        .roster-item { background: white; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 12px; padding: 14px; }
+        .roster-main-row { display: flex; justify-content: space-between; align-items: flex-start; }
         .roster-info { font-size: 14px; flex-grow: 1; }
-        .roster-actions { display: flex; gap: 8px; margin-left: 10px; }
-        
-        .action-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 12px;
-            color: white;
-        }
-        .btn-edit { background-color: var(--warn); }
-        .btn-delete { background-color: var(--danger); }
-
-        .badge-inline-status {
-            display: inline-block;
-            padding: 2px 6px;
-            font-weight: bold;
-            font-size: 11px;
-            border-radius: 4px;
-            color: white;
-            text-transform: uppercase;
-            margin-left: 5px;
-        }
-        .badge-inline-status.congrats { background-color: var(--primary); }
-        .badge-inline-status.push { background-color: var(--danger); }
-
-        .roster-subject-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 6px;
-            font-size: 11px;
-            background: #f1f5f9;
-            padding: 8px;
-            border-radius: 4px;
-            color: var(--text-muted);
-        }
-
-        .live-calc-banner {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            background: #e2e8f0;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 16px;
-            font-weight: bold;
-            font-size: 14px;
-            border: 1px solid var(--border);
-        }
 
         .maneb-scroller {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-height: 300px;
-            overflow-y: auto;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            background: #f8fafc;
+            display: flex; flex-direction: column; gap: 12px; max-height: 250px;
+            overflow-y: auto; padding: 10px; margin-bottom: 20px;
+            border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;
         }
         
         .maneb-subject-card {
-            display: grid;
-            grid-template-columns: auto 2fr 1fr 1fr;
-            align-items: center;
-            gap: 16px;
-            background: white;
-            padding: 12px 16px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
+            display: grid; grid-template-columns: auto 2fr 1fr 1fr; align-items: center;
+            gap: 16px; background: white; padding: 12px 16px; border-radius: 6px; border: 1px solid var(--border);
         }
 
         .subject-toggle { width: 20px; height: 20px; cursor: pointer; }
-        .maneb-badge-display { font-size: 14px; font-weight: bold; color: var(--primary); text-align: right; }
 
         button.main-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
+            width: 100%; padding: 12px; background-color: var(--primary); color: white;
+            border: none; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer;
         }
         button.main-btn:hover { background-color: var(--primary-hover); }
 
         .status-box { padding: 12px; border-radius: 6px; margin-top: 12px; font-size: 14px; text-align: center; display: none; }
-        .error { background: #fee2e2; color: #991b1b; }
-        .success { background: #dcfce7; color: #166534; }
+        .error { background: #fee2e2; color: #991b1b; display: block; }
+        .success { background: #dcfce7; color: #166534; display: block; }
 
         .results-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 25px;
-            margin-top: 10px;
-            position: relative;
-            overflow: hidden;
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+            padding: 25px; margin-top: 10px; position: relative; overflow: hidden;
         }
 
         .watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-35deg); 
-            font-size: 65px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 8px;
-            white-space: nowrap;
-            pointer-events: none;
-            opacity: 0.08;
-            z-index: 10;
-            text-align: center;
-            width: 100%;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-35deg); 
+            font-size: 65px; font-weight: 900; text-transform: uppercase; letter-spacing: 8px;
+            white-space: nowrap; pointer-events: none; opacity: 0.08; z-index: 10; text-align: center; width: 100%;
         }
         .watermark.passed { color: #0284c7; }
         .watermark.failed { color: #dc2626; }
 
         .results-header { border-bottom: 2px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 18px; z-index: 20; position: relative; }
-        .results-summary-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; background: #e2e8f0; padding: 16px; border-radius: 6px; margin-bottom: 18px; font-weight: bold; font-size: 15px; z-index: 20; position: relative; }
+        #res-student-name { text-align: left; color: var(--student-name-color) !important; font-size: 22px; }
+        
+        .card-logo-frame {
+            width: 85px; height: 85px; border-radius: 8px; border: 1px solid var(--border);
+            background: #f1f5f9; display: flex; justify-content: center; align-items: center; overflow: hidden;
+        }
+        .card-logo-frame img { width: 100%; height: 100%; object-fit: cover; }
 
-        .results-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 12px 0; border-bottom: 1px solid #e2e8f0; font-size: 14px; z-index: 20; position: relative; }
+        .results-summary-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; background: #e2e8f0; padding: 16px; border-radius: 6px; margin-bottom: 18px; font-weight: bold; font-size: 15px; z-index: 20; position: relative; }
+        
+        .results-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr; padding: 12px 0; border-bottom: 1px solid #e2e8f0; font-size: 14px; z-index: 20; position: relative; text-align: left; }
         .results-row.th { font-weight: bold; border-bottom: 2px solid #cbd5e1; color: var(--text-muted); }
+
+        .chart-container { margin-top: 25px; background: white; border: 1px solid var(--border); border-radius: 8px; padding: 16px; z-index: 20; position: relative; }
+        .chart-container h4 { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .chart-upward-wrapper { display: flex; justify-content: space-around; align-items: flex-end; height: 220px; padding-bottom: 45px; border-bottom: 2px solid var(--border); position: relative; }
+        .chart-column-node { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; width: 60px; position: relative; }
+        .chart-bar-vertical-bg { background: #e2e8f0; border-radius: 4px 4px 0 0; width: 24px; height: 100%; display: flex; align-items: flex-end; }
+        .chart-bar-vertical-fill { width: 100%; height: 0%; border-radius: 4px 4px 0 0; transition: height 1s ease-in-out; }
+        .chart-lbl-percentage { font-size: 11px; font-weight: bold; margin-bottom: 4px; }
+        .chart-lbl-subject { position: absolute; bottom: -35px; font-size: 10px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 75px; transform: rotate(-15deg); color: var(--text-muted); }
 
         .auth-switch-link { color: var(--primary); text-decoration: underline; cursor: pointer; font-weight: 600; }
         
         .otp-modal {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(15, 23, 42, 0.6);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 10000;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.6); display: flex; justify-content: center; align-items: center; z-index: 10000;
         }
-        .otp-box {
-            background: white; padding: 30px; border-radius: 8px;
-            max-width: 400px; width: 100%; text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-        }
+        .otp-box { background: white; padding: 30px; border-radius: 8px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
     <div id="intro-splash-screen">
-        <h1>National Results Portal</h1>
-        <p>View Your Results</p>
+        <div class="splash-content-wrapper">
+            <h1>National Results Portal</h1>
+            <p>View Your Results</p>
+        </div>
     </div>
 
     <div id="verification-modal" class="otp-modal hidden">
         <div class="otp-box">
             <h3>Verify Corporate Email</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
-                A verification token has been dispatched to your school's structural email container. Enter it to initialize workspace.
-            </p>
-            <div class="form-group">
-                <input type="text" id="input-otp-code" placeholder="Enter Verification Code" style="text-align: center; font-weight: bold; letter-spacing: 4px;">
-            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">A token has been sent to your institutional registry profile container.</p>
+            <div class="form-group"><input type="text" id="input-otp-code" placeholder="Enter Code" style="text-align: center; font-weight: bold;"></div>
             <button type="button" class="main-btn" id="btn-confirm-otp">Complete Verification</button>
-            <div id="otp-status" class="status-box"></div>
         </div>
     </div>
 
@@ -367,13 +250,11 @@
         </header>
 
         <section id="student-section">
-            <h2 id="student-portal-title">Academic Examination Center</h2>
+            <h2>Academic Examination Center</h2>
             <form id="student-lookup-form">
                 <div class="form-group">
                     <label>Target Infrastructure Institution</label>
-                    <select id="search-school-id" required>
-                        <option value="">Select Institutional Campus</option>
-                    </select>
+                    <select id="search-school-id" required><option value="">Select Institutional Campus</option></select>
                 </div>
                 <div class="form-group"><label>Examination Index Number</label><input type="text" id="search-exam-no" placeholder="M0012/0045" required></div>
                 <div class="form-row-two">
@@ -389,26 +270,39 @@
                 </div>
                 <button type="submit" class="main-btn">Decrypt & Query Records</button>
             </form>
-            <div id="student-status" class="status-box"></div>
         </section>
 
         <section id="separate-results-dashboard" class="separate-dashboard hidden">
-            <h2 id="res-school-header" style="text-transform: uppercase; margin-bottom: 2px;"></h2>
-            <p id="res-school-subheader" style="text-align: center; font-size: 13px; font-weight: bold; color: var(--text-muted); margin-bottom: 20px;"></p>
+            <div class="school-identity-header-wrapper">
+                <div class="card-logo-frame" id="school-letterhead-logo-target"></div>
+                <div class="school-header-text-container">
+                    <h2 id="res-school-header" style="text-transform: uppercase;"></h2>
+                    <p id="res-combined-metadata-subheader" style="font-size: 15px; font-weight: bold; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;"></p>
+                    <p id="res-school-location-subheader" style="font-size: 13px; font-weight: 500; color: var(--text-muted); margin-top: 4px;"></p>
+                </div>
+            </div>
+            
             <div id="results-display" class="results-card">
                 <div id="card-watermark" class="watermark"></div>
                 <div class="results-header">
-                    <h3 id="res-student-name"></h3>
-                    <p id="res-student-meta" style="font-size:13px; color:var(--text-muted);"></p>
+                    <div>
+                        <h3 id="res-student-name"></h3>
+                        <p id="res-student-meta" style="font-size:13px; color:var(--text-muted);"></p>
+                    </div>
                 </div>
                 <div class="results-summary-strip">
                     <span id="res-total-marks"></span><span id="res-class-position"></span>
                     <span id="res-total-points"></span><span id="res-pass-status"></span>
                 </div>
-                <div class="results-row th"><span>Subject Course</span><span>Mark</span><span>Grade</span><span>Subject Rank</span></div>
+                <div class="results-row th"><span>Subject Course</span><span>Mark</span><span>Grade</span><span>Rank</span><span>Remarks</span></div>
                 <div id="grades-list"></div>
                 
-                <div class="form-row-three" style="margin-top:20px; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div class="chart-container">
+                    <h4>Subject Mark Analysis Matrix</h4>
+                    <div class="chart-upward-wrapper" id="student-chart-bars-render"></div>
+                </div>
+                
+                <div class="form-row-three" style="margin-top:40px; grid-template-columns: 1fr 1fr; gap:15px;">
                     <button class="main-btn" id="download-pdf-btn">Download PDF Report</button>
                     <button class="main-btn" id="close-dashboard-btn" style="background-color: var(--text-muted);">Exit Dashboard</button>
                 </div>
@@ -416,29 +310,31 @@
         </section>
 
         <section id="teacher-section" class="hidden">
-            
             <div id="school-login-box" class="results-card">
                 <h3>Registered Institutional Access Gate</h3>
                 <form id="form-school-login">
                     <div class="form-group"><label>Corporate School Email Address</label><input type="email" id="login-email" required></div>
                     <div class="form-group"><label>Security Access Account Password</label><input type="password" id="login-password" required></div>
                     <button type="submit" class="main-btn" style="margin-bottom: 15px;">Authenticate Session</button>
-                    <p style="font-size: 14px; text-align: center;">New institution profile? <span class="auth-switch-link" id="go-to-register">Create Cloud Account Structure</span></p>
+                    <p style="font-size: 14px; text-align: center;">New institution profile? <span class="auth-switch-link" id="go-to-register">Create Cloud Account</span></p>
                 </form>
-                <div id="login-status" class="status-box"></div>
             </div>
 
             <div id="school-register-box" class="results-card hidden">
-                <h3>Initialize Multi-School Shared Server Ecosystem</h3>
+                <h3>Initialize Server Ecosystem</h3>
                 <form id="form-school-register">
-                    <div class="form-group"><label>Official School Name</label><input type="text" id="reg-name" placeholder="e.g. Mzuzu Government Secondary School" required></div>
-                    <div class="form-group"><label>Geographic District Jurisdiction</label><input type="text" id="reg-district" placeholder="e.g. Mzuzu City" required></div>
-                    <div class="form-group"><label>Corporate Institutional Email Connection</label><input type="email" id="reg-email" placeholder="management@school.edu" required></div>
+                    <div class="form-group"><label>Official School Name</label><input type="text" id="reg-name" required></div>
+                    <div class="form-row-two">
+                        <div><label>School Postal Address</label><input type="text" id="reg-address" placeholder="P.O. Box 45" required></div>
+                        <div><label>School Location / Town</label><input type="text" id="reg-location" placeholder="Mzuzu" required></div>
+                    </div>
+                    <div class="form-group"><label>Geographic District Jurisdiction</label><input type="text" id="reg-district" required></div>
+                    <div class="form-group"><label>Corporate Institutional Email</label><input type="email" id="reg-email" required></div>
                     <div class="form-group"><label>Establish System Password</label><input type="password" id="reg-password" minlength="6" required></div>
-                    <button type="submit" class="main-btn" style="margin-bottom: 15px;">Dispatch System Registration Code</button>
+                    <div class="form-group"><label>Upload Logo</label><input type="file" id="reg-logo" accept="image/*"></div>
+                    <button type="submit" class="main-btn" style="margin-bottom: 15px;">Dispatch Registration Code</button>
                     <p style="font-size: 14px; text-align: center;">Prior account present? <span class="auth-switch-link" id="go-to-login">Access Portal Entrance</span></p>
                 </form>
-                <div id="register-status" class="status-box"></div>
             </div>
 
             <div id="teacher-authenticated-dashboard" class="hidden">
@@ -447,23 +343,7 @@
                         <h3 id="dash-school-display-name" style="text-align:left; margin:0; font-size:18px;"></h3>
                         <p id="dash-school-display-district" style="font-size:12px; font-weight:bold; color:var(--text-muted);"></p>
                     </div>
-                    <button class="action-btn btn-delete" id="btn-school-logout" style="padding:8px 16px;">Terminate Session</button>
-                </div>
-
-                <div class="results-card" style="margin-bottom: 25px; background: #fafafa;">
-                    <h3>Manage Institutional Profile Information</h3>
-                    <form id="form-profile-management">
-                        <div class="form-row-two">
-                            <div class="form-group"><label>Confirm Current Institutional Name</label><input type="text" id="profile-old-name" required></div>
-                            <div class="form-group"><label>Confirm Current Password</label><input type="password" id="profile-old-password" required></div>
-                        </div>
-                        <div class="form-row-two">
-                            <div class="form-group"><label>New Institutional Name</label><input type="text" id="profile-new-name" placeholder="Leave blank to retain original"></div>
-                            <div class="form-group"><label>New System Account Password</label><input type="password" id="profile-new-password" placeholder="Leave blank to retain original" minlength="6"></div>
-                        </div>
-                        <button type="submit" class="main-btn" style="background-color: var(--warn);">Commit Profile System Modifications</button>
-                    </form>
-                    <div id="profile-status" class="status-box"></div>
+                    <button class="main-btn" id="btn-school-logout" style="padding:8px 16px; width:auto; background: #64748b;">Terminate Session</button>
                 </div>
 
                 <h2>Active System Cohort Classes</h2>
@@ -474,12 +354,16 @@
                     <div class="tab-btn" data-form="Form 4">Form 4</div>
                 </div>
 
-                <h3 id="roster-title" style="text-align:left; font-size:15px;">Active Records (Click profile container cards to look inside)</h3>
                 <div class="roster-container" id="student-roster-list"></div>
 
-                <h2 id="form-action-title">Upload New Student Record</h2>
-                <form id="teacher-upload-form">
-                    <input type="hidden" id="edit-mode-key" value="">
+                <form id="teacher-upload-form" style="margin-bottom: 40px;">
+                    <h2>Upload Student Record</h2>
+                    
+                    <div class="live-counter-strip">
+                        <div class="counter-box">Total Score Entry Sum<span id="live-total-marks">0</span></div>
+                        <div class="counter-box">Calculated Metric Points<span id="live-total-points">--</span></div>
+                    </div>
+
                     <div class="form-group"><label>Full Legal Name</label><input type="text" id="input-name" required></div>
                     <div class="form-row-three">
                         <div><label>Exam Index No</label><input type="text" id="input-exam-no" required></div>
@@ -491,27 +375,46 @@
                         </div>
                         <div><label>Date of Birth</label><input type="date" id="input-dob" required></div>
                     </div>
-                    
+                    <div class="form-row-three">
+                        <div><label>Academic Year</label><input type="text" id="input-year" placeholder="2026" required></div>
+                        <div><label>Academic Term</label>
+                            <select id="input-term" required>
+                                <option value="End of Term 1">End of Term 1</option>
+                                <option value="End of Term 2">End of Term 2</option>
+                                * <option value="End of Term 3">End of Term 3</option>
+                            </select>
+                        </div>
+                        <div><label>Type of Exam</label><input type="text" id="input-exam-type" placeholder="NED Examination" required></div>
+                    </div>
                     <div class="form-group">
-                        <label>Academic Promotion Decision Matrix Override</label>
-                        <select id="input-pass-status" required>
-                            <option value="Passed">Passed (CONGRATS)</option>
-                            <option value="Failed">Failed (PUSH)</option>
-                        </select>
+                        <label>Academic Promotion Status</label>
+                        <select id="input-pass-status" required><option value="Passed">Passed</option><option value="Failed">Failed</option></select>
                     </div>
-
-                    <h3>Enter Academic Course Profiles (Check Active Classes)</h3>
-                    
-                    <div class="live-calc-banner">
-                        <span id="form-live-total-marks">Total Marks: 0</span>
-                        <span id="form-live-total-points">Grade: --</span>
-                    </div>
-
                     <div class="maneb-scroller" id="dynamic-scroller-container"></div>
-                    <button type="submit" class="main-btn" id="btn-submit-form">Commit Profile Entry to Database</button>
-                    <button type="button" class="main-btn hidden" id="btn-cancel-edit" style="background-color:var(--text-muted); margin-top:8px;">Exit Edit State</button>
+                    <button type="submit" class="main-btn">Commit Profile Entry</button>
                 </form>
-                <div id="teacher-status" class="status-box"></div>
+
+                <div class="results-card" style="border: 2px solid #fca5a5; background: #fff5f5;">
+                    <h3 style="color: var(--danger); text-align: left;">School Account Settings & Governance</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Provide the verified Old School Name and Old Password to modify credentials or clear database records.</p>
+                    
+                    <form id="form-account-governance">
+                        <div class="form-row-two">
+                            <div><label>Verify Current Old School Name</label><input type="text" id="gov-old-name" required></div>
+                            <div><label>Verify Current Old Password</label><input type="password" id="gov-old-pass" required></div>
+                        </div>
+                        <hr style="margin: 15px 0; border: 0; border-top: 1px solid #fee2e2;">
+                        <div class="form-row-two">
+                            <div><label>New School Name (To Update)</label><input type="text" id="gov-new-name"></div>
+                            <div><label>New Password (To Update)</label><input type="password" id="gov-new-pass"></div>
+                        </div>
+                        <div class="form-row-two" style="margin-top: 20px;">
+                            <button type="button" class="main-btn" id="btn-gov-update" style="background: var(--warn);">Update Account Details</button>
+                            <button type="button" class="main-btn" id="btn-gov-delete" style="background: var(--danger);">Delete School Account</button>
+                        </div>
+                    </form>
+                    <div id="gov-status" class="status-box"></div>
+                </div>
             </div>
         </section>
     </div>
@@ -525,23 +428,18 @@
             authDomain: "mzugoss-portal-online-results.firebaseapp.com",
             databaseURL: "https://mzugoss-portal-online-results-default-rtdb.firebaseio.com",
             projectId: "mzugoss-portal-online-results",
-            storageBucket: "mzugoss-portal-online-results.firebasestorage.app",
-            messagingSenderId: "1022182098658",
-            appId: "1:1022182098658:web:aed5b8059617bce07880bb",
-            measurementId: "G-7DZ3JC10WY"
+            storageBucket: "mzugoss-portal-online-results.firebasestorage.app"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const subjects = ["Mathematics", "English Language", "Chichewa", "Biology", "Chemistry", "Physics", "Additional Mathematics", "Computer Studies", "Geography", "History", "Social Studies", "Agriculture", "Business Studies", "Bible Knowledge", "Home Economics", "Clothing and Textile", "French", "Wood Work", "Metal Work", "Technical Drawing"];
-        
+        const subjects = ["Mathematics", "English Language", "Chichewa", "Biology", "Chemistry", "Physics", "Geography", "History", "Social Studies", "Agriculture"];
         let currentSelectedDashboardForm = "Form 1";
-        let globalDatabaseCache = {};
-        
         let activeSchoolObject = null;
         let activeGeneratedOtpToken = null;
         let pendingRegistrationDataPayload = null;
+        let base64LogoPayloadString = "";
 
         const scroller = document.getElementById('dynamic-scroller-container');
         subjects.forEach(sub => {
@@ -550,9 +448,83 @@
                     <input type="checkbox" class="subject-toggle" data-subject="${sub}">
                     <h4 style="flex-grow:1;">${sub}</h4>
                     <input type="number" class="subject-mark-input" data-subject="${sub}" min="0" max="100" placeholder="%" disabled>
-                    <span class="maneb-badge-display">Grade: --</span>
                 </div>`;
         });
+
+        function calculateManebGrade(score, formLevel) {
+            const val = parseInt(score);
+            if (isNaN(val)) return { grade: "--", label: "Invalid", numericPoint: 9, remark: "NEED SUPPORT" };
+            if (formLevel === "Form 1" || formLevel === "Form 2") {
+                if (val >= 80) return { grade: "A", label: "Excellent", numericPoint: 1, remark: "EXCELLENT" };
+                if (val >= 70) return { grade: "B", label: "Very Good", numericPoint: 2, remark: "VERY GOOD" };
+                if (val >= 60) return { grade: "C", label: "Good", numericPoint: 3, remark: "VERY GOOD" };
+                if (val >= 50) return { grade: "D", label: "Satisfactory", numericPoint: 4, remark: "GOOD" };
+                return { grade: "F", label: "Fail", numericPoint: 9, remark: "NEED SUPPORT" };
+            } else {
+                if (val >= 85) return { grade: "1", label: "Distinction", numericPoint: 1, remark: "EXCELLENT" };
+                if (val >= 80) return { grade: "2", label: "Distinction", numericPoint: 2, remark: "EXCELLENT" };
+                if (val >= 75) return { grade: "3", label: "Credit", numericPoint: 3, remark: "VERY GOOD" };
+                if (val >= 70) return { grade: "4", label: "Credit", numericPoint: 4, remark: "VERY GOOD" };
+                if (val >= 65) return { grade: "5", label: "Credit", numericPoint: 5, remark: "GOOD" };
+                if (val >= 60) return { grade: "6", label: "Credit", numericPoint: 6, remark: "NEED SUPPORT" };
+                if (val >= 50) return { grade: "7", label: "Pass", numericPoint: 7, remark: "NEED SUPPORT" };
+                if (val >= 45) return { grade: "8", label: "Pass", numericPoint: 8, remark: "NEED SUPPORT" };
+                return { grade: "9", label: "Fail", numericPoint: 9, remark: "NEED SUPPORT" };
+            }
+        }
+
+        function runLiveEntryRecalculations() {
+            let total = 0;
+            let activeGradesList = [];
+            const formLevel = document.getElementById('input-class').value;
+
+            subjects.forEach(sub => {
+                const chk = document.querySelector(`.subject-toggle[data-subject="${sub}"]`);
+                const inp = document.querySelector(`.subject-mark-input[data-subject="${sub}"]`);
+                if (chk && chk.checked && inp && inp.value !== '') {
+                    const mark = parseInt(inp.value);
+                    if (!isNaN(mark)) {
+                        total += mark;
+                        activeGradesList.push({ sub: sub, mark: mark, pointValue: calculateManebGrade(mark, formLevel).numericPoint });
+                    }
+                }
+            });
+
+            document.getElementById('live-total-marks').innerText = total;
+            
+            const pointsMonitor = document.getElementById('live-total-points');
+            if (formLevel === "Form 3" || formLevel === "Form 4") {
+                const englishObject = activeGradesList.find(g => g.sub === "English Language");
+                let remainingPool = activeGradesList.filter(g => g.sub !== "English Language").sort((a, b) => b.mark - a.mark);
+                
+                let bestSixPointsSum = englishObject ? englishObject.pointValue : 0;
+                let counted = englishObject ? 1 : 0;
+                
+                for (let i = 0; i < remainingPool.length && counted < 6; i++) {
+                    bestSixPointsSum += remainingPool[i].pointValue; counted++;
+                }
+                pointsMonitor.innerText = counted > 0 ? `${bestSixPointsSum} Pts` : "--";
+            } else {
+                pointsMonitor.innerText = "Junior Level";
+            }
+        }
+
+        document.getElementById('input-class').addEventListener('change', runLiveEntryRecalculations);
+        document.querySelectorAll('.subject-toggle, .subject-mark-input').forEach(elem => {
+            elem.addEventListener('input', runLiveEntryRecalculations);
+            elem.addEventListener('change', runLiveEntryRecalculations);
+        });
+
+        document.getElementById('reg-logo').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(file) {
+                const rdr = new FileReader();
+                rdr.onloadend = () => { base64LogoPayloadString = rdr.result; };
+                rdr.readAsDataURL(file);
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => { populateSchoolDropdownMenu(); });
 
         const btnStudent = document.getElementById('btn-student-view');
         const btnTeacher = document.getElementById('btn-teacher-view');
@@ -562,13 +534,17 @@
         const navigationBar = document.getElementById('portal-navigation-bar');
 
         btnStudent.addEventListener('click', () => { toggleView(btnStudent, btnTeacher, sectionStudent, sectionTeacher); });
-        btnTeacher.addEventListener('click', () => { toggleView(btnTeacher, btnStudent, sectionTeacher, sectionStudent); populateSchoolDropdownMenu(); });
+        btnTeacher.addEventListener('click', () => { toggleView(btnTeacher, btnStudent, sectionTeacher, sectionStudent); });
 
         function toggleView(activeBtn, inactiveBtn, activeSec, inactiveSec) {
             activeBtn.classList.add('active'); inactiveBtn.classList.remove('active');
             activeSec.classList.remove('hidden'); inactiveSec.classList.add('hidden');
-            separateResultsDashboard.classList.add('hidden');
-            navigationBar.classList.remove('hidden'); 
+            separateResultsDashboard.classList.add('hidden'); navigationBar.classList.remove('hidden'); 
+        }
+
+        function showStatus(elem, text, statusClass) {
+            elem.innerText = text; elem.className = `status-box ${statusClass}`;
+            setTimeout(() => { elem.className = 'status-box'; }, 5000);
         }
 
         document.getElementById('go-to-register').addEventListener('click', () => {
@@ -584,109 +560,43 @@
             e.preventDefault();
             const rawEmail = document.getElementById('reg-email').value.trim();
             const cleanSchoolNodeId = rawEmail.replace(/[^a-zA-Z0-9]/g, '_');
-
-            get(child(ref(db), `schools/${cleanSchoolNodeId}`)).then((snapshot) => {
-                if (snapshot.exists()) {
-                    showStatus(document.getElementById('register-status'), "Registration conflict: Structural email identity exists.", "error");
-                } else {
-                    activeGeneratedOtpToken = Math.floor(100000 + Math.random() * 900000).toString();
-                    
-                    pendingRegistrationDataPayload = {
-                        id: cleanSchoolNodeId,
-                        schoolName: document.getElementById('reg-name').value.trim(),
-                        districtName: document.getElementById('reg-district').value.trim(),
-                        email: rawEmail,
-                        password: document.getElementById('reg-password').value
-                    };
-
-                    alert(`[MOCK EMAIL SMTP ENGINE INTERCEPT]\nDestination Account: ${rawEmail}\nVerification Verification Code Issued: ${activeGeneratedOtpToken}`);
-                    document.getElementById('verification-modal').classList.remove('hidden');
-                }
-            });
+            activeGeneratedOtpToken = Math.floor(100000 + Math.random() * 900000).toString();
+            pendingRegistrationDataPayload = {
+                id: cleanSchoolNodeId,
+                schoolName: document.getElementById('reg-name').value.trim(),
+                address: document.getElementById('reg-address').value.trim(),
+                location: document.getElementById('reg-location').value.trim(),
+                districtName: document.getElementById('reg-district').value.trim(),
+                email: rawEmail,
+                password: document.getElementById('reg-password').value,
+                logo: base64LogoPayloadString || ""
+            };
+            alert(`[VERIFICATION CODE]: ${activeGeneratedOtpToken}`);
+            document.getElementById('verification-modal').classList.remove('hidden');
         });
 
-        // Enforce absolute data saving upon successful verification
         document.getElementById('btn-confirm-otp').addEventListener('click', () => {
-            const enteredToken = document.getElementById('input-otp-code').value.trim();
-            if (enteredToken === activeGeneratedOtpToken && pendingRegistrationDataPayload) {
-                
-                const schoolRef = ref(db, `schools/${pendingRegistrationDataPayload.id}`);
-                
-                set(schoolRef, pendingRegistrationDataPayload)
-                    .then(() => {
-                        document.getElementById('verification-modal').classList.add('hidden');
-                        document.getElementById('form-school-register').reset();
-                        showStatus(document.getElementById('register-status'), "Corporate workspace safely provisioned and completely saved to cloud storage! Please login.", "success");
-                        
-                        activeGeneratedOtpToken = null;
-                        pendingRegistrationDataPayload = null;
-                        populateSchoolDropdownMenu(); 
-                    })
-                    .catch((error) => {
-                        showStatus(document.getElementById('otp-status'), "Database saving error: Connection interrupted.", "error");
-                        console.error("Data save failed:", error);
-                    });
-            } else {
-                showStatus(document.getElementById('otp-status'), "Invalid transmission verification token structural balance.", "error");
+            if (document.getElementById('input-otp-code').value.trim() === activeGeneratedOtpToken) {
+                set(ref(db, `schools/${pendingRegistrationDataPayload.id}`), pendingRegistrationDataPayload).then(() => {
+                    document.getElementById('verification-modal').classList.add('hidden');
+                    document.getElementById('form-school-register').reset();
+                    base64LogoPayloadString = "";
+                    populateSchoolDropdownMenu();
+                });
             }
         });
 
         document.getElementById('form-school-login').addEventListener('submit', (e) => {
             e.preventDefault();
-            const checkEmail = document.getElementById('login-email').value.trim();
-            const cleanSchoolNodeId = checkEmail.replace(/[^a-zA-Z0-9]/g, '_');
-
+            const cleanSchoolNodeId = document.getElementById('login-email').value.trim().replace(/[^a-zA-Z0-9]/g, '_');
             get(child(ref(db), `schools/${cleanSchoolNodeId}`)).then((snapshot) => {
                 if (snapshot.exists() && snapshot.val().password === document.getElementById('login-password').value) {
                     activeSchoolObject = snapshot.val();
                     initializeAuthenticatedState();
-                } else {
-                    showStatus(document.getElementById('login-status'), "Invalid identification keys.", "error");
-                }
+                    loadRosterRecords();
+                } else { alert("Authentication Failure."); }
             });
         });
-
-        // Profile Update Implementation 
-        document.getElementById('form-profile-management').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const oldName = document.getElementById('profile-old-name').value.trim();
-            const oldPass = document.getElementById('profile-old-password').value;
-            const newName = document.getElementById('profile-new-name').value.trim();
-            const newPass = document.getElementById('profile-new-password').value;
-
-            if (oldName !== activeSchoolObject.schoolName || oldPass !== activeSchoolObject.password) {
-                showStatus(document.getElementById('profile-status'), "Identity mismatch verification failure. Double-check original keys.", "error");
-                return;
-            }
-
-            if (newName) activeSchoolObject.schoolName = newName;
-            if (newPass) activeSchoolObject.password = newPass;
-
-            set(ref(db, `schools/${activeSchoolObject.id}`), activeSchoolObject).then(() => {
-                showStatus(document.getElementById('profile-status'), "Institutional profile update deployed across cloud registry.", "success");
-                document.getElementById('dash-school-display-name').innerText = activeSchoolObject.schoolName;
-                document.getElementById('form-profile-management').reset();
-                populateSchoolDropdownMenu();
-            });
-        });
-
-        document.getElementById('btn-school-logout').addEventListener('click', () => {
-            activeSchoolObject = null;
-            document.getElementById('teacher-authenticated-dashboard').classList.add('hidden');
-            document.getElementById('school-login-box').classList.remove('hidden');
-            document.getElementById('form-school-login').reset();
-        });
-
-        function initializeAuthenticatedState() {
-            document.getElementById('school-login-box').classList.add('hidden');
-            document.getElementById('school-register-box').classList.add('hidden');
-            document.getElementById('teacher-authenticated-dashboard').classList.remove('hidden');
-            
-            document.getElementById('dash-school-display-name').innerText = activeSchoolObject.schoolName;
-            document.getElementById('dash-school-display-district').innerText = `District: ${activeSchoolObject.districtName}`;
-            
-            syncDatabaseSnapshot();
-        }
 
         function populateSchoolDropdownMenu() {
             get(child(ref(db), 'schools')).then((snapshot) => {
@@ -694,380 +604,254 @@
                 selectElement.innerHTML = '<option value="">Select Institutional Campus</option>';
                 if(snapshot.exists()) {
                     Object.values(snapshot.val()).forEach(school => {
-                        selectElement.innerHTML += `<option value="${school.id}">${school.schoolName} (${school.districtName})</option>`;
+                        selectElement.innerHTML += `<option value="${school.id}">${school.schoolName}</option>`;
                     });
                 }
             });
         }
-        populateSchoolDropdownMenu();
 
-        function calculateManebGrade(score) {
-            if (score === "" || isNaN(score)) return null;
-            const s = parseInt(score);
-            if (s >= 86) return 1; if (s >= 80) return 2; if (s >= 75) return 3; if (s >= 70) return 4;
-            if (s >= 65) return 5; if (s >= 60) return 6; if (s >= 55) return 7; if (s >= 50) return 8;
-            return 9;
+        function initializeAuthenticatedState() {
+            document.getElementById('school-login-box').classList.add('hidden');
+            document.getElementById('teacher-authenticated-dashboard').classList.remove('hidden');
+            document.getElementById('dash-school-display-name').innerText = activeSchoolObject.schoolName;
+            document.getElementById('dash-school-display-district').innerText = `District: ${activeSchoolObject.districtName}`;
         }
 
-        function calculateJceGrade(score) {
-            if (score === "" || isNaN(score)) return '--';
-            const s = parseInt(score);
-            if (s >= 80) return 'A'; if (s >= 65) return 'B'; if (s >= 50) return 'C'; if (s >= 40) return 'D';
-            return 'F';
-        }
-
-        document.getElementById('input-class').addEventListener('change', runLiveFormCalculationTracker);
-
-        scroller.addEventListener('change', (e) => {
-            if (e.target.classList.contains('subject-toggle')) {
-                const input = e.target.parentElement.querySelector('.subject-mark-input');
-                input.disabled = !e.target.checked;
-                if (!e.target.checked) { input.value = ""; input.removeAttribute('required'); e.target.parentElement.querySelector('.maneb-badge-display').innerText = "Grade: --"; }
-                else { input.setAttribute('required', 'true'); }
-                runLiveFormCalculationTracker();
-            }
+        document.getElementById('btn-school-logout').addEventListener('click', () => {
+            activeSchoolObject = null;
+            document.getElementById('teacher-authenticated-dashboard').classList.add('hidden');
+            document.getElementById('school-login-box').classList.remove('hidden');
         });
 
-        scroller.addEventListener('input', (e) => {
-            if (e.target.classList.contains('subject-mark-input')) {
-                const badge = e.target.parentElement.querySelector('.maneb-badge-display');
-                const formSelection = document.getElementById('input-class').value;
-                if (formSelection === "Form 1" || formSelection === "Form 2") {
-                    badge.innerText = "Grade: " + calculateJceGrade(e.target.value);
-                } else {
-                    const grade = calculateManebGrade(e.target.value);
-                    badge.innerText = grade ? "Grade: " + grade : "Grade: --";
-                }
-                runLiveFormCalculationTracker();
-            }
-        });
+        document.getElementById('btn-gov-update').addEventListener('click', () => {
+            const oldNameInput = document.getElementById('gov-old-name').value.trim();
+            const oldPassInput = document.getElementById('gov-old-pass').value;
+            const govStatus = document.getElementById('gov-status');
 
-        function runLiveFormCalculationTracker() {
-            let runningTotalMarks = 0, count = 0, mockGradesObj = {};
-            const formSelection = document.getElementById('input-class').value;
-
-            scroller.querySelectorAll('.subject-toggle').forEach(chk => {
-                if (chk.checked) {
-                    count++;
-                    const val = parseInt(chk.parentElement.querySelector('.subject-mark-input').value) || 0;
-                    runningTotalMarks += val;
-                    mockGradesObj[chk.getAttribute('data-subject')] = { maneb: calculateManebGrade(val) || 9, percentage: val };
-                }
-            });
-
-            document.getElementById('form-live-total-marks').innerText = `Total Marks: ${runningTotalMarks}`;
-            if (formSelection === "Form 1" || formSelection === "Form 2") {
-                let avg = count > 0 ? Math.round(runningTotalMarks / count) : 0;
-                document.getElementById('form-live-total-points').innerText = `JCE Profile Grade: ${calculateJceGrade(avg)}`;
-            } else {
-                document.getElementById('form-live-total-points').innerText = `Best 6 (Inc. English): ${calculateBest6Points(mockGradesObj)} Pts`;
-            }
-        }
-
-        function syncDatabaseSnapshot() {
-            get(child(ref(db), `students/${activeSchoolObject.id}`)).then((snapshot) => {
-                globalDatabaseCache = snapshot.exists() ? snapshot.val() : {};
-                renderDashboardRoster();
-            });
-        }
-
-        document.querySelectorAll('.tab-btn').forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                currentSelectedDashboardForm = e.target.getAttribute('data-form');
-                document.getElementById('roster-title').innerText = `Active Records in ${currentSelectedDashboardForm}`;
-                renderDashboardRoster();
-            });
-        });
-
-        function calculateBest6Points(grades) {
-            let englishPoints = 9, otherPointsArray = [];
-            for (const sub in grades) {
-                const pointValue = parseInt(grades[sub].maneb) || 9;
-                if (sub.toLowerCase() === "english language") { englishPoints = pointValue; }
-                else { otherPointsArray.push(pointValue); }
-            }
-            otherPointsArray.sort((a, b) => a - b);
-            let top5Others = otherPointsArray.slice(0, 5);
-            while(top5Others.length < 5) { top5Others.push(9); }
-            return englishPoints + top5Others.reduce((a, b) => a + b, 0);
-        }
-
-        function calculateSubjectCohortRanks(allStudentsInClass, targetSubject, searchScore) {
-            let list = [];
-            allStudentsInClass.forEach(s => {
-                if (s.grades && s.grades[targetSubject] !== undefined) {
-                    list.push(parseInt(s.grades[targetSubject].percentage) || 0);
-                }
-            });
-            list.sort((a, b) => b - a);
-            const rank = list.indexOf(parseInt(searchScore)) + 1;
-            return `${rank}/${list.length}`;
-        }
-
-        function evaluatePassFailOutcomeStatus(student) {
-            const numSubjects = Object.keys(student.grades || {}).length;
-            const maximumPossibleScore = numSubjects * 100;
-            const rawScoreSufficiency = (maximumPossibleScore > 0) ? (student.totalScore >= (maximumPossibleScore * 0.5)) : false;
-            
-            if (student.passStatusChoice === "Failed" || !rawScoreSufficiency) {
-                return { text: "PUSH", class: "push", macro: "FAIL" };
-            }
-            return { text: "CONGRATS", class: "congrats", macro: "PASS" };
-        }
-
-        function renderDashboardRoster() {
-            const container = document.getElementById('student-roster-list');
-            container.innerHTML = '';
-            
-            const classCohort = Object.values(globalDatabaseCache).filter(s => s.classForm === currentSelectedDashboardForm);
-            classCohort.sort((a,b) => b.totalScore - a.totalScore);
-
-            if(classCohort.length === 0) {
-                container.innerHTML = `<p style="font-size:14px; text-align:center; color:var(--text-muted);">No profiles listed here.</p>`;
+            if (oldNameInput !== activeSchoolObject.schoolName || oldPassInput !== activeSchoolObject.password) {
+                showStatus(govStatus, "Error: Metadata elements do not match current records.", "error");
                 return;
             }
 
-            classCohort.forEach((student, index) => {
-                const points = calculateBest6Points(student.grades);
-                const classPosition = index + 1;
-                const recordKey = student.examNo.replace(/\//g, '-');
+            const newName = document.getElementById('gov-new-name').value.trim();
+            const newPass = document.getElementById('gov-new-pass').value;
 
-                let scoreProfileLabel = '';
-                let totalSubjects = Object.keys(student.grades).length;
-                if (currentSelectedDashboardForm === "Form 1" || currentSelectedDashboardForm === "Form 2") {
-                    let avg = totalSubjects > 0 ? Math.round(student.totalScore / totalSubjects) : 0;
-                    scoreProfileLabel = `JCE Overall Grade: <span style="color:var(--danger);">${calculateJceGrade(avg)}</span>`;
-                } else {
-                    scoreProfileLabel = `MSCE Points: <span style="color:var(--danger);">${points} Pts</span> (Inc. English)`;
+            if (newName) activeSchoolObject.schoolName = newName;
+            if (newPass) activeSchoolObject.password = newPass;
+
+            set(ref(db, `schools/${activeSchoolObject.id}`), activeSchoolObject).then(() => {
+                initializeAuthenticatedState();
+                populateSchoolDropdownMenu();
+                document.getElementById('form-account-governance').reset();
+                showStatus(govStatus, "Account configurations completely revised.", "success");
+            });
+        });
+
+        document.getElementById('btn-gov-delete').addEventListener('click', () => {
+            const oldNameInput = document.getElementById('gov-old-name').value.trim();
+            const oldPassInput = document.getElementById('gov-old-pass').value;
+            const govStatus = document.getElementById('gov-status');
+
+            if (oldNameInput !== activeSchoolObject.schoolName || oldPassInput !== activeSchoolObject.password) {
+                showStatus(govStatus, "Verification Failed.", "error");
+                return;
+            }
+
+            if (confirm("Are you sure you want to delete this school account?")) {
+                remove(ref(db, `schools/${activeSchoolObject.id}`)).then(() => {
+                    remove(ref(db, `records/${activeSchoolObject.id}`)).then(() => {
+                        alert("Account completely eliminated.");
+                        location.reload();
+                    });
+                });
+            }
+        });
+
+        document.querySelectorAll('.class-dashboard-tabs .tab-btn').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                document.querySelectorAll('.class-dashboard-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentSelectedDashboardForm = e.target.getAttribute('data-form');
+                loadRosterRecords();
+            });
+        });
+
+        document.querySelectorAll('.subject-toggle').forEach(chk => {
+            chk.addEventListener('change', (e) => {
+                const sub = e.target.getAttribute('data-subject');
+                const inp = document.querySelector(`input[type="number"][data-subject="${sub}"]`);
+                inp.disabled = !e.target.checked; if(inp.disabled) inp.value = '';
+            });
+        });
+
+        document.getElementById('teacher-upload-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const exNo = document.getElementById('input-exam-no').value.trim().replace(/\//g, '_');
+            const targetForm = document.getElementById('input-class').value;
+            
+            let dataProfile = {
+                name: document.getElementById('input-name').value.trim(), examNo: exNo, classForm: targetForm,
+                dob: document.getElementById('input-dob').value, year: document.getElementById('input-year').value.trim(),
+                term: document.getElementById('input-term').value, examType: document.getElementById('input-exam-type').value.trim(),
+                status: document.getElementById('input-pass-status').value, subjects: {}
+            };
+
+            subjects.forEach(sub => {
+                const chk = document.querySelector(`.subject-toggle[data-subject="${sub}"]`);
+                const inp = document.querySelector(`.subject-mark-input[data-subject="${sub}"]`);
+                if(chk.checked && inp.value !== '') dataProfile.subjects[sub] = parseInt(inp.value);
+            });
+
+            set(ref(db, `records/${activeSchoolObject.id}/${targetForm}/${exNo}`), dataProfile).then(() => {
+                document.getElementById('teacher-upload-form').reset();
+                loadRosterRecords();
+                runLiveEntryRecalculations();
+                alert("Data Synchronized.");
+            });
+        });
+
+        function loadRosterRecords() {
+            const container = document.getElementById('student-roster-list');
+            container.innerHTML = "";
+            get(child(ref(db), `records/${activeSchoolObject.id}/${currentSelectedDashboardForm}`)).then((snapshot) => {
+                if(snapshot.exists()) {
+                    Object.values(snapshot.val()).forEach(st => {
+                        container.innerHTML += `<div class="roster-item"><div class="roster-main-row"><div class="roster-info"><strong>${st.name}</strong> (${st.examNo.replace(/_/g,'/')})</div></div></div>`;
+                    });
                 }
+            });
+        }
 
-                const resolution = evaluatePassFailOutcomeStatus(student);
+        document.getElementById('student-lookup-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const targetSchool = document.getElementById('search-school-id').value;
+            const examNo = document.getElementById('search-exam-no').value.trim().replace(/\//g, '_');
+            const level = document.getElementById('search-class').value;
 
-                let subjectsRowHTML = '';
-                for (const subKey in student.grades) {
-                    const score = student.grades[subKey].percentage;
-                    let displayGrade = (currentSelectedDashboardForm === "Form 1" || currentSelectedDashboardForm === "Form 2") ? calculateJceGrade(score) : student.grades[subKey].maneb;
-                    const subRank = calculateSubjectCohortRanks(classCohort, subKey, score);
-                    subjectsRowHTML += `<div><strong>${subKey.substring(0,8)}</strong>: ${score}% (${displayGrade}) [Pos: ${subRank}]</div>`;
+            get(child(ref(db), `schools/${targetSchool}`)).then((schoolSnap) => {
+                if(schoolSnap.exists()) {
+                    const schoolData = schoolSnap.val();
+                    get(child(ref(db), `records/${targetSchool}/${level}`)).then((recordsSnap) => {
+                        if(recordsSnap.exists() && recordsSnap.child(examNo).exists()) {
+                            const studentTarget = recordsSnap.child(examNo).val();
+                            
+                            const allPeersList = Object.values(recordsSnap.val());
+                            let gradedPeersPool = allPeersList.map(peer => {
+                                let totalSum = 0;
+                                Object.keys(peer.subjects).forEach(subKey => {
+                                    totalSum += parseInt(peer.subjects[subKey] || 0);
+                                });
+                                return { examNo: peer.examNo, totalScore: totalSum };
+                            });
+
+                            gradedPeersPool.sort((a, b) => b.totalScore - a.totalScore);
+                            const peerIndexPosition = gradedPeersPool.findIndex(p => p.examNo === examNo);
+                            const calculatedPositionString = `${peerIndexPosition + 1}/${gradedPeersPool.length}`;
+
+                            let generatedGradesPayload = [];
+                            Object.keys(studentTarget.subjects).forEach(sub => {
+                                const currentMark = studentTarget.subjects[sub];
+                                const gradeDetails = calculateManebGrade(currentMark, level);
+                                generatedGradesPayload.push({
+                                    sub: sub, mark: currentMark, gr: gradeDetails.grade,
+                                    lbl: gradeDetails.label, pointValue: gradeDetails.numericPoint,
+                                    remark: gradeDetails.remark
+                                });
+                            });
+
+                            generatedGradesPayload.sort((a, b) => b.mark - a.mark);
+                            const totalEnteredSubjectsCount = generatedGradesPayload.length;
+                            generatedGradesPayload = generatedGradesPayload.map((item, index) => {
+                                item.rankText = `${index + 1}/${totalEnteredSubjectsCount}`;
+                                return item;
+                            });
+
+                            renderStudentDashboardCard(schoolData, studentTarget, generatedGradesPayload, calculatedPositionString);
+                        } else { alert("Record not found."); }
+                    });
                 }
+            });
+        });
 
-                container.innerHTML += `
-                    <div class="roster-item" style="cursor:pointer;" onclick="window.loadStudentRecordForEditGlobal('${recordKey}')">
-                        <div class="roster-main-row">
-                            <div class="roster-info">
-                                <strong style="font-size:15px; color:var(--primary);">${student.name}</strong> (${student.examNo})
-                                <span class="badge-inline-status ${resolution.class}">${resolution.text} (${resolution.macro})</span><br>
-                                <span style="font-weight:600; font-size:13px;">Rank Profile: ${classPosition} / ${classCohort.length} | ${scoreProfileLabel}</span>
-                            </div>
-                            <div class="roster-actions">
-                                <button class="action-btn btn-edit" onclick="event.stopPropagation(); window.loadStudentRecordForEditGlobal('${recordKey}')">Edit</button>
-                                <button class="action-btn btn-delete" onclick="event.stopPropagation(); window.deleteStudentRecordGlobal('${recordKey}')">Delete</button>
-                            </div>
-                        </div>
-                        <div class="roster-subject-grid">${subjectsRowHTML}</div>
+        function renderStudentDashboardCard(school, student, grades, dynamicClassPosition) {
+            sectionStudent.classList.add('hidden');
+            navigationBar.classList.add('hidden');
+            separateResultsDashboard.classList.remove('hidden');
+
+            document.getElementById('res-school-header').innerText = school.schoolName;
+            
+            const fullExamString = `${student.year} ${student.term} ${student.examType}`;
+            document.getElementById('res-combined-metadata-subheader').innerText = fullExamString;
+
+            // Renders address and location data fetched from the target school's registration node
+            const schoolAddressStr = school.address ? school.address : "";
+            const schoolLocationStr = school.location ? school.location : "";
+            document.getElementById('res-school-location-subheader').innerText = `${schoolAddressStr} ${schoolLocationStr}`.trim();
+            
+            const logoContainer = document.getElementById('school-letterhead-logo-target');
+            logoContainer.innerHTML = school.logo ? `<img src="${school.logo}">` : `<span style="font-size:10px;color:gray;">No Logo</span>`;
+
+            document.getElementById('res-student-name').innerText = `Student: ${student.name}`;
+            document.getElementById('res-student-meta').innerText = `Index No: ${student.examNo.replace(/_/g, '/')} | DOB: ${student.dob}`;
+            
+            let totalCumulativeSum = 0;
+            grades.forEach(g => totalCumulativeSum += g.mark);
+
+            document.getElementById('res-total-marks').innerText = `Total Marks: ${totalCumulativeSum}`;
+            document.getElementById('res-class-position').innerText = `Position: ${dynamicClassPosition}`;
+            
+            const pointsDisplayNode = document.getElementById('res-total-points');
+            if (student.classForm === "Form 3" || student.classForm === "Form 4") {
+                const englishObject = grades.find(g => g.sub === "English Language");
+                let remainingPool = grades.filter(g => g.sub !== "English Language").sort((a, b) => b.mark - a.mark);
+                
+                let bestSixPointsSum = englishObject ? englishObject.pointValue : 0;
+                let counted = englishObject ? 1 : 0;
+                
+                for (let i = 0; i < remainingPool.length && counted < 6; i++) {
+                    bestSixPointsSum += remainingPool[i].pointValue; counted++;
+                }
+                pointsDisplayNode.innerHTML = `<span class="highlight-green-points">Best 6 Points: ${bestSixPointsSum}</span>`;
+            } else {
+                pointsDisplayNode.innerText = "Junior Level Profile";
+            }
+
+            const statusDisplayNode = document.getElementById('res-pass-status');
+            statusDisplayNode.innerHTML = `Status: <span style="color: var(--status-${student.status === 'Passed' ? 'passed' : 'failed'}); font-weight: bold;">${student.status}</span>`;
+            
+            const watermark = document.getElementById('card-watermark');
+            watermark.innerText = student.status; watermark.className = `watermark ${student.status.toLowerCase()}`;
+
+            const listContainer = document.getElementById('grades-list');
+            const barChartContainer = document.getElementById('student-chart-bars-render');
+            listContainer.innerHTML = ""; barChartContainer.innerHTML = "";
+
+            const colors = ['#0284c7', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+            const visualOrderList = [...grades].sort((a,b) => a.sub.localeCompare(b.sub));
+
+            visualOrderList.forEach((item, idx) => {
+                listContainer.innerHTML += `
+                    <div class="results-row">
+                        <span>${item.sub}</span>
+                        <span>${item.mark}%</span>
+                        <span><strong>${item.gr}</strong></span>
+                        <span style="color:var(--text-muted); font-size:12px;">${item.rankText}</span>
+                        <span style="font-size:11px; font-weight:600; color: ${item.remark === 'EXCELLENT' ? 'var(--success)' : item.remark === 'NEED SUPPORT' ? 'var(--danger)' : 'var(--text-main)'}">${item.remark}</span>
+                    </div>`;
+                
+                const barColor = colors[idx % colors.length];
+                barChartContainer.innerHTML += `
+                    <div class="chart-column-node">
+                        <span class="chart-lbl-percentage" style="color: ${barColor}">${item.mark}%</span>
+                        <div class="chart-bar-vertical-bg"><div class="chart-bar-vertical-fill" style="height: ${item.mark}%; background-color: ${barColor};"></div></div>
+                        <span class="chart-lbl-subject">${item.sub}</span>
                     </div>`;
             });
         }
 
-        const teacherForm = document.getElementById('teacher-upload-form');
-        teacherForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const examNo = document.getElementById('input-exam-no').value.trim();
-            const cleanKey = examNo.replace(/\//g, '-');
-            const gradesObject = {};
-            let combinedScoreTotal = 0;
-            
-            scroller.querySelectorAll('.subject-toggle').forEach(chk => {
-                if (chk.checked) {
-                    const sub = chk.getAttribute('data-subject');
-                    const val = parseInt(chk.parentElement.querySelector('.subject-mark-input').value) || 0;
-                    combinedScoreTotal += val;
-                    gradesObject[sub] = { percentage: val, maneb: calculateManebGrade(val) };
-                }
-            });
-
-            const studentData = {
-                name: document.getElementById('input-name').value.trim(),
-                examNo: examNo,
-                classForm: document.getElementById('input-class').value,
-                dob: document.getElementById('input-dob').value,
-                passStatusChoice: document.getElementById('input-pass-status').value,
-                grades: gradesObject,
-                totalScore: combinedScoreTotal 
-            };
-
-            set(ref(db, `students/${activeSchoolObject.id}/${cleanKey}`), studentData).then(() => {
-                showStatus(document.getElementById('teacher-status'), "Committed cleanly to server workspace cloud storage.", "success");
-                resetTeacherForm(); syncDatabaseSnapshot();
-            });
-        });
-
-        window.loadStudentRecordForEditGlobal = function(cleanKey) {
-            const student = globalDatabaseCache[cleanKey];
-            if(!student) return;
-
-            resetTeacherForm();
-            document.getElementById('edit-mode-key').value = cleanKey;
-            document.getElementById('input-name').value = student.name;
-            document.getElementById('input-exam-no').value = student.examNo;
-            document.getElementById('input-exam-no').disabled = true; 
-            document.getElementById('input-class').value = student.classForm;
-            document.getElementById('input-dob').value = student.dob;
-            document.getElementById('input-pass-status').value = student.passStatusChoice || "Passed";
-
-            scroller.querySelectorAll('.subject-toggle').forEach(chk => {
-                const sub = chk.getAttribute('data-subject');
-                const card = chk.parentElement;
-                if(student.grades && student.grades[sub]) {
-                    chk.checked = true;
-                    const inp = card.querySelector('.subject-mark-input');
-                    inp.disabled = false; inp.setAttribute('required', 'true'); inp.value = student.grades[sub].percentage;
-                    card.querySelector('.maneb-badge-display').innerText = "Grade: " + ((student.classForm === "Form 1" || student.classForm === "Form 2") ? calculateJceGrade(student.grades[sub].percentage) : student.grades[sub].maneb);
-                }
-            });
-
-            runLiveFormCalculationTracker();
-            document.getElementById('form-action-title').innerText = `Modifying Profile Data: ${student.name}`;
-            document.getElementById('btn-submit-form').innerText = "Update Existing Profile Matrix";
-            document.getElementById('btn-cancel-edit').classList.remove('hidden');
-        }
-
-        window.deleteStudentRecordGlobal = function(cleanKey) {
-            if(confirm("Confirm erasure from data schemas?")) {
-                remove(ref(db, `students/${activeSchoolObject.id}/${cleanKey}`)).then(() => { syncDatabaseSnapshot(); });
-            }
-        }
-
-        document.getElementById('btn-cancel-edit').addEventListener('click', resetTeacherForm);
-
-        function resetTeacherForm() {
-            teacherForm.reset(); document.getElementById('input-exam-no').disabled = false;
-            document.getElementById('form-action-title').innerText = "Upload New Student Record";
-            document.getElementById('btn-submit-form').innerText = "Save Student Record";
-            document.getElementById('btn-cancel-edit').classList.add('hidden');
-            scroller.querySelectorAll('.subject-toggle').forEach(chk => chk.checked = false);
-            scroller.querySelectorAll('.subject-mark-input').forEach(inp => { inp.disabled = true; inp.value = ""; });
-            scroller.querySelectorAll('.maneb-badge-display').forEach(b => b.innerText = "Grade: --");
-        }
-
-        const studentForm = document.getElementById('student-lookup-form');
-        let activeStudentReport = null;
-        let activeStudentSchoolDetails = null;
-
-        studentForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const targetSchoolId = document.getElementById('search-school-id').value;
-            const examNo = document.getElementById('search-exam-no').value.trim().replace(/\//g, '-');
-            const targetClass = document.getElementById('search-class').value;
-            const dob = document.getElementById('search-dob').value;
-
-            get(child(ref(db), `schools/${targetSchoolId}`)).then((schoolSnap) => {
-                if(schoolSnap.exists()) {
-                    activeStudentSchoolDetails = schoolSnap.val();
-                    
-                    get(child(ref(db), `students/${targetSchoolId}`)).then((snapshot) => {
-                        if(snapshot.exists()) {
-                            const records = snapshot.val();
-                            const matched = records[examNo];
-
-                            if(matched && matched.classForm === targetClass && matched.dob === dob) {
-                                sectionStudent.classList.add('hidden');
-                                separateResultsDashboard.classList.remove('hidden');
-                                renderStudentCard(matched, records);
-                            } else { showStatus(document.getElementById('student-status'), "No match discovered across verification parameter coordinates.", "error"); }
-                        } else { showStatus(document.getElementById('student-status'), "Empty campus record register data.", "error"); }
-                    });
-                }
-            });
-        });
-
         document.getElementById('close-dashboard-btn').addEventListener('click', () => {
-            separateResultsDashboard.classList.add('hidden'); sectionStudent.classList.remove('hidden');
-            studentForm.reset(); document.getElementById('student-status').style.display = 'none';
-        });
-
-        function renderStudentCard(student, totalDataset) {
-            activeStudentReport = student;
-            const classCohort = Object.values(totalDataset).filter(s => s.classForm === student.classForm);
-            classCohort.sort((a,b) => b.totalScore - a.totalScore);
-            
-            const overallRank = classCohort.findIndex(s => s.examNo === student.examNo) + 1;
-            
-            document.getElementById('res-school-header').innerText = activeStudentSchoolDetails.schoolName;
-            document.getElementById('res-school-subheader').innerText = `Location District: ${activeStudentSchoolDetails.districtName}`;
-            
-            const resolution = evaluatePassFailOutcomeStatus(student);
-
-            document.getElementById('card-watermark').innerText = resolution.text;
-            document.getElementById('card-watermark').className = "watermark " + (resolution.macro === "PASS" ? "passed" : "failed");
-
-            document.getElementById('res-student-name').innerText = student.name;
-            document.getElementById('res-student-meta').innerText = `Exam ID: ${student.examNo} | Level: ${student.classForm}`;
-            document.getElementById('res-total-marks').innerText = `Total Combined: ${student.totalScore} Mks`;
-            document.getElementById('res-class-position').innerText = `Class Rank: ${overallRank} / ${classCohort.length}`;
-            document.getElementById('res-pass-status').innerHTML = `Status: <strong style="color:${resolution.macro === 'PASS' ? 'green':'red'}">${resolution.macro}</strong>`;
-
-            let totalSubjects = Object.keys(student.grades).length;
-            if (student.classForm === "Form 1" || student.classForm === "Form 2") {
-                let averageMark = totalSubjects > 0 ? Math.round(student.totalScore / totalSubjects) : 0;
-                document.getElementById('res-total-points').innerText = `JCE Summary Assessment: ${calculateJceGrade(averageMark)}`;
-            } else {
-                const best6 = calculateBest6Points(student.grades);
-                document.getElementById('res-total-points').innerText = `MSCE Metrics Index: ${best6} Pts`;
-                activeStudentReport.computedBest6 = best6;
-            }
-
-            const list = document.getElementById('grades-list'); list.innerHTML = '';
-            for (const subKey in student.grades) {
-                const score = student.grades[subKey].percentage;
-                let finalGrade = (student.classForm === "Form 1" || student.classForm === "Form 2") ? calculateJceGrade(score) : student.grades[subKey].maneb;
-                const subRank = calculateSubjectCohortRanks(classCohort, subKey, score);
-                list.innerHTML += `<div class="results-row"><span>${subKey}</span><span>${score}%</span><span>${finalGrade}</span><span>${subRank}</span></div>`;
-            }
-
-            activeStudentReport.computedRank = overallRank; activeStudentReport.cohortSize = classCohort.length;
-        }
-
-        function showStatus(element, msg, type) {
-            element.innerText = msg; element.className = `status-box ${type}`; element.style.display = 'block';
-        }
-
-        document.getElementById('download-pdf-btn').addEventListener('click', () => {
-            if(!activeStudentReport || !activeStudentSchoolDetails) return;
-            const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            
-            doc.setFont("Helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(2, 132, 199);
-            doc.text(activeStudentSchoolDetails.schoolName.toUpperCase(), 14, 20);
-            doc.setFontSize(10); doc.setTextColor(71, 85, 105);
-            doc.text(`District Jurisdiction: ${activeStudentSchoolDetails.districtName} | Official Progress Statement`, 14, 26);
-            doc.line(14, 30, 196, 30);
-            
-            doc.text(`Student Name Profile: ${activeStudentReport.name}`, 14, 40);
-            doc.text(`Exam Identifier: ${activeStudentReport.examNo}`, 14, 46);
-            doc.text(`Assigned Forms Context: ${activeStudentReport.classForm}`, 120, 40);
-            
-            let totalSubjects = Object.keys(activeStudentReport.grades).length;
-            let metricString = (activeStudentReport.classForm === "Form 1" || activeStudentReport.classForm === "Form 2") 
-                ? `JCE Profile Grade: ${calculateJceGrade(totalSubjects > 0 ? Math.round(activeStudentReport.totalScore / totalSubjects) : 0)}`
-                : `MSCE Accumulation: ${activeStudentReport.computedBest6 || '--'} Pts`;
-
-            doc.setFillColor(241, 245, 249); doc.rect(14, 54, 182, 10, "F");
-            doc.text(`Total Score: ${activeStudentReport.totalScore}`, 18, 60);
-            doc.text(metricString, 70, 60);
-            doc.text(`Rank Assignment: ${activeStudentReport.computedRank} / ${activeStudentReport.cohortSize}`, 130, 60);
-            
-            let y = 78; doc.text("Course Subject Modules", 14, y); doc.text("Percentage Score", 100, y); doc.text("Grade Matrix Evaluation", 150, y);
-            doc.line(14, y+2, 196, y+2); y += 10;
-            
-            doc.setFont("Helvetica", "normal");
-            for(const sub in activeStudentReport.grades) {
-                let evaluationGradeValue = (activeStudentReport.classForm === "Form 1" || activeStudentReport.classForm === "Form 2") ? calculateJceGrade(activeStudentReport.grades[sub].percentage) : activeStudentReport.grades[sub].maneb;
-                doc.text(sub, 14, y); doc.text(`${activeStudentReport.grades[sub].percentage}%`, 100, y); doc.text(`${evaluationGradeValue}`, 150, y);
-                y += 8;
-            }
-            doc.save(`AcademicStatement_${activeStudentReport.examNo}.pdf`);
+            separateResultsDashboard.classList.add('hidden');
+            sectionStudent.classList.remove('hidden'); navigationBar.classList.remove('hidden');
         });
     </script>
 </body>
