@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>National School Portal - Cloud Management System</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --background: #f0f9ff;
+            --surface: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: #cbd5e1;
+            --danger: #dc2626;
+            --danger-hover: #b91c1c;
+            --warn: #d97706;
+            --success: #166534;
+            
+            --student-name-color: #16a34a; 
+            --status-passed: #16a34a;
+            --status-failed: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* 6-SECOND HIGH-QUALITY ROTATING INTRO SCREEN ANIMATION */
+        #intro-splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center;
+            background: #000;
+            animation: fadeOutSplash 0.5s ease-in-out forwards; 
+            animation-delay: 6s; /* Calibrated to exactly 6 seconds loading time */
+            overflow: hidden;
+        }
+
+        #intro-splash-screen::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.7;
+            animation: rotateHighQualityPics 6s infinite linear;
+        }
+
+        .splash-content-wrapper {
+            position: relative;
+            z-index: 2;
+            color: #ffffff;
+            text-shadow: 0 4px 14px rgba(0,0,0,0.95);
+        }
+
+        #intro-splash-screen h1 {
+            font-family: 'Times New Roman', Times, serif; font-size: 46px;
+            font-weight: bold; letter-spacing: 3px; margin-bottom: 10px; text-transform: uppercase;
+        }
+
+        #intro-splash-screen p { 
+            font-size: 16px; letter-spacing: 4px; text-transform: uppercase; opacity: 0.95; font-weight: bold;
+        }
+
+        /* Continuous rotation logic evenly dividing 6 premium assets across 6 seconds duration */
+        @keyframes rotateHighQualityPics {
+            0%, 16.65% { background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=90'); }
+            16.66%, 33.31% { background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=90'); }
+            33.32%, 49.97% { background-image: url('https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=1200&q=90'); }
+            49.98%, 66.63% { background-image: url('https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1200&q=90'); }
+            66.64%, 83.29% { background-image: url('https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=1200&q=90'); }
+            83.30%, 100% { background-image: url('https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1200&q=90'); }
+        }
+
+        @keyframes fadeOutSplash { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+
+        .container {
+            width: 100%; max-width: 850px; background: var(--surface);
+            padding: 30px; border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); margin: auto;
+        }
+
+        .hidden { display: none !important; }
+
+        .nav-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;
+        }
+
+        .nav-btn {
+            background: none; color: var(--text-muted); border: none;
+            font-weight: 600; cursor: pointer; padding: 6px 12px; font-size: 15px; outline: none;
+        }
+
+        .nav-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+
+        h2, h3 { margin-bottom: 16px; color: var(--primary); text-align: center; }
+        
+        .form-group { margin-bottom: 16px; position: relative; }
+        label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 14px; }
+        input, select {
+            width: 100%; padding: 10px 14px; border: 1px solid var(--border);
+            border-radius: 6px; font-size: 16px; outline: none;
+        }
+
+        .autocomplete-suggestions {
+            position: absolute; left: 0; right: 0; background: #ffffff; 
+            border: 1px solid var(--border); border-top: none; max-height: 200px; 
+            overflow-y: auto; z-index: 999; border-radius: 0 0 6px 6px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .suggestion-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
+        .suggestion-item:hover { background-color: #f0f9ff; }
+
+        .form-row-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .form-row-three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+
+        .live-counter-strip {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+            background: #f1f5f9; padding: 12px; border-radius: 6px;
+            margin-bottom: 16px; border: 1px dashed var(--border);
+        }
+        .counter-box { text-align: center; font-weight: bold; font-size: 14px; color: var(--text-muted); }
+        .counter-box span { color: var(--primary); font-size: 16px; display: block; }
+
+        .school-identity-header-wrapper {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 12px; margin-bottom: 20px; border-bottom: 3px double var(--border); padding-bottom: 20px;
+        }
+
+        .school-header-text-container { text-align: center; width: 100%; }
+        .school-header-text-container h2 { text-align: center; margin-bottom: 6px; }
+
+        .class-dashboard-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+
+        .tab-btn {
+            padding: 15px; background: #f1f5f9; border: 2px solid var(--border);
+            border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary-hover); box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.3); }
+
+        .roster-container {
+            background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+            padding: 15px; margin-bottom: 25px; max-height: 350px; overflow-y: auto;
+        }
+
+        .roster-item { background: white; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 12px; padding: 14px; }
+        .roster-main-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .roster-info { font-size: 14px; flex-grow: 1; }
+        .roster-actions { display: flex; gap: 8px; }
+        .action-btn { padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; color: white; }
+        .edit-action { background-color: var(--warn); }
+        .delete-action { background-color: var(--danger); }
+
+        .maneb-scroller {
+            display: flex; flex-direction: column; gap: 12px; max-height: 300px;
+            overflow-y: auto; padding: 10px; margin-bottom: 20px;
+            border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;
+        }
+        
+        .maneb-subject-card {
+            display: grid; grid-template-columns: auto 2fr 1fr 1fr; align-items: center;
+            gap: 16px; background: white; padding: 12px 16px; border-radius: 6px; border: 1px solid var(--border);
+        }
+
+        .subject-toggle { width: 20px; height: 20px; cursor: pointer; }
+
+        button.main-btn {
+            width: 100%; padding: 12px; background-color: var(--primary); color: white;
+            border: none; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer;
+        }
+        button.main-btn:hover { background-color: var(--primary-hover); }
+
+        .results-card {
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+            padding: 25px; margin-top: 10px; position: relative; overflow: hidden;
+        }
+
+        .watermark {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-35deg); 
+            font-size: 65px; font-weight: 900; text-transform: uppercase; letter-spacing: 8px;
+            white-space: nowrap; pointer-events: none; opacity: 0.08; z-index: 10; text-align: center; width: 100%;
+        }
+        .watermark.passed { color: #0284c7; }
+        .watermark.failed { color: #dc2626; }
+
+        .results-header { border-bottom: 2px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 18px; z-index: 20; position: relative; }
+        #res-student-name { text-align: left; color: var(--student-name-color) !important; font-size: 22px; }
+        
+        .card-logo-frame {
+            width: 85px; height: 85px; border-radius: 8px; border: 1px solid var(--border);
+            background: #f1f5f9; display: flex; justify-content: center; align-items: center; overflow: hidden;
+        }
+        .card-logo-frame img { width: 100%; height: 100%; object-fit: cover; }
+
+        .results-summary-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; background: #e2e8f0; padding: 16px; border-radius: 6px; margin-bottom: 18px; font-weight: bold; font-size: 15px; z-index: 20; position: relative; }
+        
+        .results-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr; padding: 12px 0; border-bottom: 1px solid #e2e8f0; font-size: 14px; z-index: 20; position: relative; text-align: left; }
+        .results-row.th { font-weight: bold; border-bottom: 2px solid #cbd5e1; color: var(--text-muted); }
+
+        .chart-container { margin-top: 25px; background: white; border: 1px solid var(--border); border-radius: 8px; padding: 16px; z-index: 20; position: relative; }
+        .chart-container h4 { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .chart-upward-wrapper { display: flex; justify-content: space-around; align-items: flex-end; height: 220px; padding-bottom: 45px; border-bottom: 2px solid var(--border); position: relative; overflow-x: auto; gap: 12px; }
+        .chart-column-node { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 50px; position: relative; }
+        .chart-bar-vertical-bg { background: #e2e8f0; border-radius: 4px 4px 0 0; width: 22px; height: 100%; display: flex; align-items: flex-end; }
+        .chart-bar-vertical-fill { width: 100%; height: 0%; border-radius: 4px 4px 0 0; transition: height 1s ease-in-out; }
+        .chart-lbl-percentage { font-size: 10px; font-weight: bold; margin-bottom: 4px; }
+        .chart-lbl-subject { position: absolute; bottom: -35px; font-size: 9px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 65px; transform: rotate(-20deg); color: var(--text-muted); }
+
+        .signature-footer-container {
+            margin-top: 30px; display: flex; justify-content: flex-end;
+            padding-top: 15px; border-top: 1px solid #cbd5e1; text-align: left;
+        }
+        .sig-box { display: flex; flex-direction: column; gap: 8px; font-size: 13px; font-weight: bold; color: var(--text-main); width: 200px; }
+        .sig-img-wrap { height: 45px; width: 120px; display: flex; align-items: center; border-bottom: 1px dashed var(--border); }
+        .sig-img-wrap img { max-height: 100%; max-width: 100%; object-fit: contain; }
+
+        .auth-switch-link { color: var(--primary); text-decoration: underline; cursor: pointer; font-weight: 600; }
+        
+        .radio-toggle-group { display: flex; gap: 20px; margin-bottom: 15px; justify-content: center; }
+        .radio-option { display: flex; align-items: center; gap: 6px; font-weight: 600; cursor: pointer; }
+        .radio-option input { width: auto; cursor: pointer; }
+
+        .profile-dashboard-card {
+            border: 2px solid var(--border); background: #f8fafc; margin-top: 20px; transition: all 0.2s ease-in-out; cursor: pointer;
+        }
+        .profile-dashboard-card:hover { border-color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .profile-dashboard-card.workspace-active { border-color: var(--warn); background: #ffffff; cursor: default; }
+    </style>
+</head>
+<body>
+
+    <div id="intro-splash-screen">
+        <div class="splash-content-wrapper">
+            <h1>National Results Portal</h1>
+            <p>Cloud Analytics System</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="nav-header" id="portal-navigation-bar">
+            <button class="nav-btn active" id="btn-student-view">Student Portal Search</button>
+            <button class="nav-btn" id="btn-teacher-view">Teachers Management Panel</button>
+        </header>
+
+        <section id="student-section">
+            <h2>Academic Examination Center</h2>
+            <form id="student-lookup-form">
+                <div class="form-group">
+                    <label>Target Infrastructure Institution</label>
+                    <input type="text" id="search-school-id" placeholder="Type school name to search..." autocomplete="off" required>
+                    <input type="hidden" id="selected-school-key" value="">
+                    <div id="autocomplete-suggestions-box" class="autocomplete-suggestions hidden"></div>
+                </div>
+                <div class="form-group"><label>Examination Index Number</label><input type="text" id="search-exam-no" placeholder="M0012/0045" required></div>
+                <div class="form-row-two">
+                    <div>
+                        <label>Class Level Form</label>
+                        <select id="search-class" required>
+                            <option value="">Select Class</option>
+                            <option value="Form 1">Form 1</option><option value="Form 2">Form 2</option>
+                            <option value="Form 3">Form 3</option><option value="Form 4">Form 4</option>
+                        </select>
+                    </div>
+                    <div><label>Date of Birth</label><input type="date" id="search-dob" required></div>
+                </div>
+                <button type="submit" class="main-btn">Decrypt & Query Records</button>
+            </form>
+        </section>
+
+        <section id="separate-results-dashboard" class="hidden">
+            <div class="school-identity-header-wrapper">
+                <div class="card-logo-frame" id="school-letterhead-logo-target"></div>
+                <div class="school-header-text-container">
+                    <h2 id="res-school-header" style="text-transform: uppercase;"></h2>
+                    <p id="res-combined-metadata-subheader" style="font-size: 15px; font-weight: bold; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;"></p>
+                    <p id="res-school-location-subheader" style="font-size: 13px; font-weight: 500; color: var(--text-muted); margin-top: 4px;"></p>
+                </div>
+            </div>
+            
+            <div id="results-display" class="results-card">
+                <div id="card-watermark" class="watermark"></div>
+                <div class="results-header">
+                    <div>
+                        <h3 id="res-student-name"></h3>
+                        <p id="res-student-meta" style="font-size:13px; color:var(--text-muted);"></p>
+                    </div>
+                </div>
+                <div class="results-summary-strip">
+                    <span id="res-total-marks"></span><span id="res-class-position"></span>
+                    <span id="res-total-points"></span><span id="res-pass-status"></span>
+                </div>
+                <div class="results-row th"><span>Subject Course</span><span>Mark</span><span>Grade</span><span>Rank</span><span>Remarks</span></div>
+                <div id="grades-list"></div>
+                
+                <div class="chart-container">
+                    <h4>Subject Mark Analysis Matrix</h4>
+                    <div class="chart-upward-wrapper" id="student-chart-bars-render"></div>
+                </div>
+
+                <div class="signature-footer-container">
+                    <div class="sig-box">
+                        <span>HEADTEACHER'S SIGNATURE:</span>
+                        <div class="sig-img-wrap" id="card-headteacher-sig-target"></div>
+                    </div>
+                </div>
+                
+                <div class="form-row-three" style="margin-top:40px; grid-template-columns: 1fr 1fr; gap:15px;">
+                    <button class="main-btn" id="download-pdf-btn">Download PDF Report</button>
+                    <button class="main-btn" id="close-dashboard-btn" style="background-color: var(--text-muted);">Exit Dashboard</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="teacher-section" class="hidden">
+            <div id="school-login-box" class="results-card">
+                <h3>Registered Institutional Access Gate</h3>
+                <form id="form-school-login">
+                    <div class="form-group"><label>Corporate School Email Address</label><input type="email" id="login-email" required></div>
+                    <div class="form-group"><label>Security Access Account Password</label><input type="password" id="login-password" required></div>
+                    <button type="submit" class="main-btn" style="margin-bottom: 15px;">Authenticate Session</button>
+                    <p style="font-size: 14px; text-align: center;">New institution profile? <span class="auth-switch-link" id="go-to-register">Create Cloud Account</span></p>
+                </form>
+            </div>
+
+            <div id="school-register-box" class="results-card hidden">
+                <h3>Initialize Server Ecosystem</h3>
+                <form id="form-school-register">
+                    <div class="form-group"><label>Official School Name</label><input type="text" id="reg-name" required></div>
+                    <div class="form-row-two">
+                        <div><label>School Postal Address</label><input type="text" id="reg-address" placeholder="P.O. Box 45" required></div>
+                        <div><label>School Location / Town</label><input type="text" id="reg-location" placeholder="Mzuzu" required></div>
+                    </div>
+                    <div class="form-group"><label>Geographic District Jurisdiction</label><input type="text" id="reg-district" required></div>
+                    <div class="form-group"><label>Corporate Institutional Email</label><input type="email" id="reg-email" required></div>
+                    <div class="form-group"><label>Establish System Password</label><input type="password" id="reg-password" minlength="6" required></div>
+                    
+                    <div class="form-row-two">
+                        <div><label>Upload School Logo</label><input type="file" id="reg-logo" accept="image/*"></div>
+                        <div><label>Headteacher's Signature</label><input type="file" id="reg-signature" accept="image/*" required></div>
+                    </div>
+
+                    <button type="submit" class="main-btn" style="margin-bottom: 15px;">Initialize Profile Workspace</button>
+                    <p style="font-size: 14px; text-align: center;">Prior account present? <span class="auth-switch-link" id="go-to-login">Access Portal Entrance</span></p>
+                </form>
+            </div>
+
+            <div id="teacher-authenticated-dashboard" class="hidden">
+                <div style="background: #e0f2fe; padding:15px; border-radius:8px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <h3 id="dash-school-display-name" style="text-align:left; margin:0; font-size:18px;"></h3>
+                        <p id="dash-school-display-district" style="font-size:12px; font-weight:bold; color:var(--text-muted);"></p>
+                    </div>
+                    <button class="main-btn" id="btn-school-logout" style="padding:8px 16px; width:auto; background: #64748b;">Terminate Session</button>
+                </div>
+
+                <div id="cohort-records-viewer-block">
+                    <h2>Active Student Database Dashboards</h2>
+                    <div class="class-dashboard-tabs">
+                        <div class="tab-btn active" data-form="Form 1">Form 1</div>
+                        <div class="tab-btn" data-form="Form 2">Form 2</div>
+                        <div class="tab-btn" data-form="Form 3">Form 3</div>
+                        <div class="tab-btn" data-form="Form 4">Form 4</div>
+                    </div>
+
+                    <div class="roster-container" id="student-roster-list"></div>
+                    
+                    <button type="button" class="main-btn" id="trigger-show-upload-form" style="background-color: #10b981; margin-bottom: 25px;">+ Add New Student Record</button>
+                </div>
+
+                <div class="results-card profile-dashboard-card" id="profile-governance-dashboard-card">
+                    <h3 style="text-align: left;" id="profile-card-title">Edit School Profile</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;" id="profile-card-desc">Click here to manage institutional details and update account configuration profiles.</p>
+                    
+                    <div id="profile-form-inner-workspace" class="hidden">
+                        <div class="radio-toggle-group">
+                            <label class="radio-option"><input type="radio" name="profile-edit-type" value="name" checked> Update Institutional Settings</label>
+                            <label class="radio-option"><input type="radio" name="profile-edit-type" value="password"> Change Password</label>
+                        </div>
+
+                        <form id="form-account-governance">
+                            <div class="form-group"><label>Verify Current (Old) Password</label><input type="password" id="gov-old-pass" required></div>
+                            
+                            <div id="gov-name-fields-block">
+                                <div class="form-row-two">
+                                    <div><label>Current Old School Name</label><input type="text" id="gov-old-name" disabled></div>
+                                    <div><label>New School Name</label><input type="text" id="gov-new-name"></div>
+                                </div>
+                                <div class="form-group"><label>Modify Account Email Address</label><input type="email" id="gov-new-email"></div>
+                                <div class="form-row-two">
+                                    <div><label>Update New Logo (Optional)</label><input type="file" id="gov-new-logo" accept="image/*"></div>
+                                    <div><label>Update Headteacher's Signature (Optional)</label><input type="file" id="gov-new-signature" accept="image/*"></div>
+                                </div>
+                            </div>
+
+                            <div id="gov-password-fields-block" class="hidden">
+                                <div class="form-group"><label>New Security Password</label><input type="password" id="gov-new-pass" minlength="6"></div>
+                            </div>
+
+                            <div class="form-row-two" style="margin-top: 15px;">
+                                <button type="submit" class="main-btn" style="background: var(--warn);">Update Parameters</button>
+                                <button type="button" class="main-btn" id="btn-cancel-profile-edit" style="background: var(--text-muted);">Exit Profile Settings</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="upload-form-wrapper" class="hidden">
+                    <form id="teacher-upload-form" style="margin-bottom: 40px;">
+                        <h2 id="upload-form-title">Upload Student Record</h2>
+                        <input type="hidden" id="edit-student-target-key" value="">
+                        
+                        <div class="live-counter-strip">
+                            <div class="counter-box">Total Score Entry Sum<span id="live-total-marks">0</span></div>
+                            <div class="counter-box">Calculated Metric Points<span id="live-total-points">--</span></div>
+                        </div>
+
+                        <div class="form-group"><label>Full Legal Name</label><input type="text" id="input-name" required></div>
+                        <div class="form-row-three">
+                            <div><label>Exam Index No</label><input type="text" id="input-exam-no" required></div>
+                            <div><label>Form Assignment</label>
+                                <select id="input-class" required>
+                                    <option value="Form 1">Form 1</option><option value="Form 2">Form 2</option>
+                                    <option value="Form 3">Form 3</option><option value="Form 4">Form 4</option>
+                                </select>
+                            </div>
+                            <div><label>Date of Birth</label><input type="date" id="input-dob" required></div>
+                        </div>
+                        <div class="form-row-three">
+                            <div><label>Academic Year</label><input type="text" id="input-year" value="2026" required></div>
+                            <div><label>Academic Term</label>
+                                <select id="input-term" required>
+                                    <option value="End of Term 1">End of Term 1</option>
+                                    <option value="End of Term 2">End of Term 2</option>
+                                    <option value="End of Term 3">End of Term 3</option>
+                                </select>
+                            </div>
+                            <div><label>Type of Exam</label><input type="text" id="input-exam-type" value="Terminal Examination" required></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Academic Promotion Status</label>
+                            <select id="input-pass-status" required><option value="Passed">Passed</option><option value="Failed">Failed</option></select>
+                        </div>
+                        <div class="maneb-scroller" id="dynamic-scroller-container"></div>
+                        <div class="form-row-two">
+                            <button type="submit" class="main-btn">Commit Profile Entry</button>
+                            <button type="button" class="main-btn" id="cancel-upload-btn" style="background-color: var(--text-muted);">Cancel & View Dashboards</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, get, child, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnWfNwXW7xXKJI2HM-FtluUNRS8QUMdCA",
+            authDomain: "mzugoss-portal-online-results.firebaseapp.com",
+            databaseURL: "https://mzugoss-portal-online-results-default-rtdb.firebaseio.com",
+            projectId: "mzugoss-portal-online-results",
+            storageBucket: "mzugoss-portal-online-results.firebasestorage.app"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const subjects = [
+            "ENGLISH", "MATHEMATICS", "CHICHEWA", "PHYSICS", "CHEMISTRY", 
+            "BIOLOGY", "GEOGRAPHY", "SOCIAL&LIFE SKILLS", "BIBLE KNOWLEDGE", 
+            "COMPUTER STUDIES", "METAL WORK", "WOOD WORK", "TECHNICAL DRAWING", 
+            "FRENCH", "HOME ECONOMICS", "CLOTHING AND TEXTILE", "BUSINESS STUDIES", 
+            "ADDITIONAL MATHEMATICS", "CREATIVE ART"
+        ];
+        
+        const graphColorPalette = [
+            "#0284c7", "#f59e0b", "#10b981", "#ec4899", "#8b5cf6", 
+            "#3b82f6", "#ef4444", "#14b8a6", "#6366f1", "#a855f7"
+        ];
+
+        let currentSelectedDashboardForm = "Form 1";
+        let activeSchoolObject = null;
+        let cachedCohortStudents = []; 
+        let localSchoolsCache = {}; 
+        let base64LogoPayloadString = "";
+        let base64SignaturePayloadString = "";
+        let base64EditLogoString = "";
+        let base64EditSignatureString = "";
+        let activeQueriedResultObject = null;
+
+        const scroller = document.getElementById('dynamic-scroller-container');
+        if (scroller) {
+            scroller.innerHTML = "";
+            subjects.forEach(sub => {
+                scroller.innerHTML += `
+                    <div class="maneb-subject-card">
+                        <input type="checkbox" class="subject-toggle" data-subject="${sub}">
+                        <h4 style="flex-grow:1; font-size:13px; color:var(--text-main); font-weight:600;">${sub}</h4>
+                        <input type="number" class="subject-mark-input" data-subject="${sub}" min="0" max="100" placeholder="%" disabled>
+                    </div>`;
+            });
+        }
+
+        document.addEventListener('change', function(e) {
+            if (e.target && e.target.classList.contains('subject-toggle')) {
+                const subject = e.target.getAttribute('data-subject');
+                const input = document.querySelector(`.subject-mark-input[data-subject="${subject}"]`);
+                if (input) {
+                    input.disabled = !e.target.checked;
+                    if (input.disabled) input.value = '';
+                }
+                runLiveEntryRecalculations();
+            }
+        });
+
+        function calculateManebGrade(score, formLevel) {
+            const val = parseInt(score);
+            if (isNaN(val)) return { grade: "--", label: "Invalid", numericPoint: 9, remark: "NEED SUPPORT" };
+            if (formLevel === "Form 1" || formLevel === "Form 2") {
+                if (val >= 80) return { grade: "A", label: "Excellent", numericPoint: 1, remark: "EXCELLENT" };
+                if (val >= 70) return { grade: "B", label: "Very Good", numericPoint: 2, remark: "VERY GOOD" };
+                if (val >= 60) return { grade: "C", label: "Good", numericPoint: 3, remark: "VERY GOOD" };
+                if (val >= 50) return { grade: "D", label: "Satisfactory", numericPoint: 4, remark: "GOOD" };
+                return { grade: "F", label: "Fail", numericPoint: 9, remark: "NEED SUPPORT" };
+            } else {
+                if (val >= 85) return { grade: "1", label: "Distinction", numericPoint: 1, remark: "EXCELLENT" };
+                if (val >= 80) return { grade: "2", label: "Distinction", numericPoint: 2, remark: "EXCELLENT" };
+                if (val >= 75) return { grade: "3", label: "Credit", numericPoint: 3, remark: "VERY GOOD" };
+                if (val >= 70) return { grade: "4", label: "Credit", numericPoint: 4, remark: "VERY GOOD" };
+                if (val >= 65) return { grade: "5", label: "Credit", numericPoint: 5, remark: "GOOD" };
+                if (val >= 60) return { grade: "6", label: "Credit", numericPoint: 6, remark: "NEED SUPPORT" };
+                if (val >= 50) return { grade: "7", label: "Pass", numericPoint: 7, remark: "NEED SUPPORT" };
+                if (val >= 45) return { grade: "8", label: "Pass", numericPoint: 8, remark: "NEED SUPPORT" };
+                return { grade: "9", label: "Fail", numericPoint: 9, remark: "NEED SUPPORT" };
+            }
+        }
+
+        function calculateManebBestSixPoints(gradesArray, formLevel) {
+            if (formLevel !== "Form 3" && formLevel !== "Form 4") return "Junior Level Framework";
+            const englishMatch = gradesArray.find(g => g.sub === "ENGLISH");
+            let alternativePool = gradesArray.filter(g => g.sub !== "ENGLISH").sort((a, b) => b.mark - a.mark);
+            let pointsSum = englishMatch ? englishMatch.pointValue : 0;
+            let subjectsCounted = englishMatch ? 1 : 0;
+            for (let i = 0; i < alternativePool.length && subjectsCounted < 6; i++) {
+                pointsSum += alternativePool[i].pointValue;
+                subjectsCounted++;
+            }
+            return subjectsCounted > 0 ? `${pointsSum} Pts` : "--";
+        }
+
+        function runLiveEntryRecalculations() {
+            let total = 0;
+            let activeGradesList = [];
+            const formLevel = document.getElementById('input-class').value;
+
+            subjects.forEach(sub => {
+                const chk = document.querySelector(`.subject-toggle[data-subject="${sub}"]`);
+                const inp = document.querySelector(`.subject-mark-input[data-subject="${sub}"]`);
+                if (chk && chk.checked && inp && inp.value !== '') {
+                    const mark = parseInt(inp.value);
+                    if (!isNaN(mark)) {
+                        total += mark;
+                        activeGradesList.push({ sub, mark, pointValue: calculateManebGrade(mark, formLevel).numericPoint });
+                    }
+                }
+            });
+
+            document.getElementById('live-total-marks').innerText = total;
+            document.getElementById('live-total-points').innerText = calculateManebBestSixPoints(activeGradesList, formLevel);
+        }
+
+        document.getElementById('input-class').addEventListener('change', runLiveEntryRecalculations);
+        document.querySelectorAll('.subject-mark-input').forEach(input => {
+            input.addEventListener('input', runLiveEntryRecalculations);
+        });
+
+        // Document attachment workflows
+        document.getElementById('reg-logo').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(file) { const rdr = new FileReader(); rdr.onloadend = () => { base64LogoPayloadString = rdr.result; }; rdr.readAsDataURL(file); }
+        });
+        document.getElementById('reg-signature').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(file) { const rdr = new FileReader(); rdr.onloadend = () => { base64SignaturePayloadString = rdr.result; }; rdr.readAsDataURL(file); }
+        });
+        document.getElementById('gov-new-logo').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(file) { const rdr = new FileReader(); rdr.onloadend = () => { base64EditLogoString = rdr.result; }; rdr.readAsDataURL(file); }
+        });
+        document.getElementById('gov-new-signature').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(file) { const rdr = new FileReader(); rdr.onloadend = () => { base64EditSignatureString = rdr.result; }; rdr.readAsDataURL(file); }
+        });
+
+        // View configuration controllers
+        const btnStudent = document.getElementById('btn-student-view');
+        const btnTeacher = document.getElementById('btn-teacher-view');
+        const sectionStudent = document.getElementById('student-section');
+        const sectionTeacher = document.getElementById('teacher-section');
+        const separateResultsDashboard = document.getElementById('separate-results-dashboard');
+        const navigationBar = document.getElementById('portal-navigation-bar');
+
+        btnStudent.addEventListener('click', () => { toggleView(btnStudent, btnTeacher, sectionStudent, sectionTeacher); });
+        btnTeacher.addEventListener('click', () => { toggleView(btnTeacher, btnStudent, sectionTeacher, sectionStudent); });
+
+        function toggleView(activeBtn, inactiveBtn, activeSec, inactiveSec) {
+            activeBtn.classList.add('active'); inactiveBtn.classList.remove('active');
+            activeSec.classList.remove('hidden'); inactiveSec.classList.add('hidden'); 
+            separateResultsDashboard.classList.add('hidden'); navigationBar.classList.remove('hidden'); 
+        }
+
+        document.getElementById('go-to-register').addEventListener('click', () => {
+            document.getElementById('school-login-box').classList.add('hidden');
+            document.getElementById('school-register-box').classList.remove('hidden');
+        });
+        document.getElementById('go-to-login').addEventListener('click', () => {
+            document.getElementById('school-register-box').classList.add('hidden');
+            document.getElementById('school-login-box').classList.remove('hidden');
+        });
+
+        async function populateSchoolDropdownMenu() {
+            try {
+                const snapshot = await get(ref(db, 'schools'));
+                if (snapshot.exists()) { localSchoolsCache = snapshot.val(); }
+            } catch (err) { console.error("Error setting autocomplete references:", err); }
+        }
+        window.addEventListener('DOMContentLoaded', populateSchoolDropdownMenu);
+
+        // Auto-complete validation metrics
+        const schoolSearchInput = document.getElementById('search-school-id');
+        const hiddenSchoolKeyInput = document.getElementById('selected-school-key');
+        const suggestionsBox = document.getElementById('autocomplete-suggestions-box');
+
+        schoolSearchInput.addEventListener('input', function() {
+            const query = this.value.trim().toLowerCase();
+            suggestionsBox.innerHTML = "";
+            hiddenSchoolKeyInput.value = ""; 
+
+            if (query.length >= 1) {
+                let matchesFound = false;
+                for (let key in localSchoolsCache) {
+                    const schoolName = localSchoolsCache[key].name;
+                    if (schoolName.toLowerCase().startsWith(query)) {
+                        matchesFound = true;
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'suggestion-item';
+                        optionDiv.innerText = schoolName;
+                        optionDiv.addEventListener('click', function() {
+                            schoolSearchInput.value = schoolName;
+                            hiddenSchoolKeyInput.value = key; 
+                            suggestionsBox.classList.add('hidden'); 
+                        });
+                        suggestionsBox.appendChild(optionDiv);
+                    }
+                }
+                if (matchesFound) suggestionsBox.classList.remove('hidden');
+                else suggestionsBox.classList.add('hidden');
+            } else {
+                suggestionsBox.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target !== schoolSearchInput && e.target !== suggestionsBox) {
+                suggestionsBox.classList.add('hidden');
+            }
+        });
+
+        // Publish configuration profiles
+        const formSchoolRegister = document.getElementById('form-school-register');
+        formSchoolRegister.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const schoolKey = "school_" + Date.now();
+            const payload = { 
+                name: document.getElementById('reg-name').value.trim(), 
+                address: document.getElementById('reg-address').value.trim(), 
+                location: document.getElementById('reg-location').value.trim(), 
+                district: document.getElementById('reg-district').value.trim(), 
+                email: document.getElementById('reg-email').value.trim(), 
+                password: document.getElementById('reg-password').value.trim(), 
+                logo: base64LogoPayloadString, signature: base64SignaturePayloadString 
+            };
+
+            try {
+                await set(ref(db, `schools/${schoolKey}`), payload);
+                alert("Institutional Cloud Profile Ecosystem Initialized!");
+                formSchoolRegister.reset();
+                base64LogoPayloadString = ""; base64SignaturePayloadString = "";
+                document.getElementById('school-register-box').classList.add('hidden');
+                document.getElementById('school-login-box').classList.remove('hidden');
+                populateSchoolDropdownMenu();
+            } catch(err) { alert("Registration pipeline failure."); }
+        });
+
+        // Initialize connection authorization profiles
+        const formSchoolLogin = document.getElementById('form-school-login');
+        formSchoolLogin.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+
+            try {
+                const snapshot = await get(ref(db, 'schools'));
+                if (snapshot.exists()) {
+                    let foundSchoolKey = null;
+                    const schoolsData = snapshot.val();
+                    for (let key in schoolsData) {
+                        if (schoolsData[key].email === email && schoolsData[key].password === password) {
+                            foundSchoolKey = key; activeSchoolObject = schoolsData[key]; activeSchoolObject.id = key; break;
+                        }
+                    }
+                    if (foundSchoolKey) {
+                        document.getElementById('school-login-box').classList.add('hidden');
+                        document.getElementById('teacher-authenticated-dashboard').classList.remove('hidden');
+                        document.getElementById('dash-school-display-name').innerText = activeSchoolObject.name;
+                        document.getElementById('dash-school-display-district').innerText = `District Jurisdiction: ${activeSchoolObject.district}`;
+                        switchToDashboardView();
+                    } else { alert("Invalid Credentials!"); }
+                } else { alert("No registered institutional profiles found."); }
+            } catch (err) { alert("Cloud access path communication fault."); }
+        });
+
+        async function fetchAndRenderCohortClassRoster(formLevel) {
+            const rosterContainer = document.getElementById('student-roster-list');
+            rosterContainer.innerHTML = `<p style="text-align:center; color:var(--text-muted);">Syncing student ledger database...</p>`;
+            if (!activeSchoolObject) return;
+
+            try {
+                const snapshot = await get(ref(db, `students/${activeSchoolObject.id}`));
+                rosterContainer.innerHTML = ""; cachedCohortStudents = [];
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    for (let id in data) { const student = data[id]; student.dbKey = id; cachedCohortStudents.push(student); }
+                }
+
+                let localClassCohort = cachedCohortStudents.filter(s => s.classLevel === formLevel);
+                if (localClassCohort.length === 0) {
+                    rosterContainer.innerHTML = `<p style="text-align:center; padding:20px; color:var(--text-muted);">No published profiles found in ${formLevel} database.</p>`;
+                    return;
+                }
+
+                localClassCohort.forEach(student => {
+                    const rosterItem = document.createElement('div');
+                    rosterItem.className = 'roster-item';
+                    rosterItem.innerHTML = `
+                        <div class="roster-main-row">
+                            <div class="roster-info">
+                                <strong style="font-size:15px; color:var(--text-main);">${student.name}</strong> (${student.examNo})<br>
+                                <span style="font-size:12px; color:var(--text-muted);">DOB: ${student.dob} | Promotion Status: ${student.promotionStatus}</span>
+                            </div>
+                            <div class="roster-actions">
+                                <button class="action-btn edit-action" data-key="${student.dbKey}">Edit</button>
+                                <button class="action-btn delete-action" data-key="${student.dbKey}">Delete</button>
+                            </div>
+                        </div>`;
+                    rosterContainer.appendChild(rosterItem);
+                });
+
+                rosterContainer.querySelectorAll('.edit-action').forEach(btn => {
+                    btn.addEventListener('click', (e) => { initRecordEditWorkflow(e.target.getAttribute('data-key')); });
+                });
+                rosterContainer.querySelectorAll('.delete-action').forEach(btn => {
+                    btn.addEventListener('click', (e) => { initRecordDeleteWorkflow(e.target.getAttribute('data-key')); });
+                });
+            } catch (err) { rosterContainer.innerHTML = `<p style="color:var(--danger); text-align:center;">Failed to pull current records database.</p>`; }
+        }
+
+        function initRecordEditWorkflow(studentKey) {
+            const student = cachedCohortStudents.find(s => s.dbKey === studentKey);
+            if (!student) return;
+
+            document.getElementById('edit-student-target-key').value = studentKey;
+            document.getElementById('input-name').value = student.name;
+            document.getElementById('input-exam-no').value = student.examNo;
+            document.getElementById('input-class').value = student.classLevel;
+            document.getElementById('input-dob').value = student.dob;
+            document.getElementById('input-year').value = student.year || "2026";
+            document.getElementById('input-term').value = student.term;
+            document.getElementById('input-exam-type').value = student.examType;
+            document.getElementById('input-pass-status').value = student.promotionStatus;
+
+            subjects.forEach(sub => {
+                const chk = document.querySelector(`.subject-toggle[data-subject="${sub}"]`);
+                const inp = document.querySelector(`.subject-mark-input[data-subject="${sub}"]`);
+                if(chk && inp) { chk.checked = false; inp.disabled = true; inp.value = ""; }
+            });
+
+            if (student.grades) {
+                for (let sub in student.grades) {
+                    const chk = document.querySelector(`.subject-toggle[data-subject="${sub}"]`);
+                    const inp = document.querySelector(`.subject-mark-input[data-subject="${sub}"]`);
+                    if (chk && inp) { chk.checked = true; inp.disabled = false; inp.value = student.grades[sub].mark; }
+                }
+            }
+            document.getElementById('upload-form-title').innerText = "Modify / Edit Student Record";
+            runLiveEntryRecalculations(); switchToUploadFormView();
+        }
+
+        async function initRecordDeleteWorkflow(studentKey) {
+            const secret = prompt("Security clearance notice! Enter Account Password to execute data purge extraction:");
+            if (!secret) return;
+            if (secret !== activeSchoolObject.password) { alert("Security Authorization Failed!"); return; }
+
+            if (confirm("Are you sure you want to permanently delete this student profile?")) {
+                try {
+                    await remove(ref(db, `students/${activeSchoolObject.id}/${studentKey}`));
+                    alert("Record purged."); fetchAndRenderCohortClassRoster(currentSelectedDashboardForm);
+                } catch(e) { alert("Failed to complete eviction workflow."); }
+            }
+        }
+
+        const tabButtons = document.querySelectorAll('.class-dashboard-tabs .tab-btn');
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                tabButtons.forEach(b => b.classList.remove('active')); e.target.classList.add('active');
+                currentSelectedDashboardForm = e.target.getAttribute('data-form'); fetchAndRenderCohortClassRoster(currentSelectedDashboardForm);
+            });
+        });
+
+        const cohortViewerBlock = document.getElementById('cohort-records-viewer-block');
+        const uploadFormWrapper = document.getElementById('upload-form-wrapper');
+        const btnTriggerShowUpload = document.getElementById('trigger-show-upload-form');
+        const btnCancelUpload = document.getElementById('cancel-upload-btn');
+
+        function switchToDashboardView() {
+            uploadFormWrapper.classList.add('hidden');
+            cohortViewerBlock.classList.remove('hidden');
+            document.getElementById('profile-governance-dashboard-card').classList.remove('workspace-active', 'hidden');
+            document.getElementById('profile-form-inner-workspace').classList.add('hidden');
+            document.getElementById('profile-card-title').innerText = "Edit School Profile";
+            document.getElementById('profile-card-desc').classList.remove('hidden');
+            fetchAndRenderCohortClassRoster(currentSelectedDashboardForm);
+        }
+
+        function switchToUploadFormView() {
+            cohortViewerBlock.classList.add('hidden');
+            document.getElementById('profile-governance-dashboard-card').classList.add('hidden');
+            uploadFormWrapper.classList.remove('hidden');
+        }
+
+        btnTriggerShowUpload.addEventListener('click', () => {
+            document.getElementById('edit-student-target-key').value = "";
+            document.getElementById('teacher-upload-form').reset();
+            document.getElementById('upload-form-title').innerText = "Upload Student Record";
+            document.querySelectorAll('.subject-mark-input').forEach(i => i.disabled = true);
+            document.getElementById('live-total-marks').innerText = "0";
+            document.getElementById('live-total-points').innerText = "--";
+            switchToUploadFormView();
+        });
+        btnCancelUpload.addEventListener('click', switchToDashboardView);
+
+        const profileDashboardCard = document.getElementById('profile-governance-dashboard-card');
+        const profileInnerWorkspace = document.getElementById('profile-form-inner-workspace');
+        const btnCancelProfileEdit = document.getElementById('btn-cancel-profile-edit');
+
+        profileDashboardCard.addEventListener('click', function(e) {
+            if (!profileDashboardCard.classList.contains('workspace-active')) {
+                cohortViewerBlock.classList.add('hidden'); 
+                profileDashboardCard.classList.add('workspace-active');
+                document.getElementById('profile-card-title').innerText = "Institutional Profile Settings Control Center";
+                document.getElementById('profile-card-desc').classList.add('hidden');
+                
+                document.getElementById('gov-old-name').value = activeSchoolObject.name;
+                document.getElementById('gov-new-name').value = activeSchoolObject.name;
+                document.getElementById('gov-new-email').value = activeSchoolObject.email;
+                profileInnerWorkspace.classList.remove('hidden');
+            }
+        });
+
+        btnCancelProfileEdit.addEventListener('click', function(e) {
+            e.stopPropagation(); formAccountGovernance.reset();
+            base64EditLogoString = ""; base64EditSignatureString = "";
+            switchToDashboardView();
+        });
+
+        const profileEditTypeRadios = document.querySelectorAll('input[name="profile-edit-type"]');
+        const govNameFieldsBlock = document.getElementById('gov-name-fields-block');
+        const govPasswordFieldsBlock = document.getElementById('gov-password-fields-block');
+
+        profileEditTypeRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if(e.target.value === 'name') { govNameFieldsBlock.classList.remove('hidden'); govPasswordFieldsBlock.classList.add('hidden'); }
+                else { govNameFieldsBlock.classList.add('hidden'); govPasswordFieldsBlock.classList.remove('hidden'); }
+            });
+        });
+
+        const formAccountGovernance = document.getElementById('form-account-governance');
+        formAccountGovernance.addEventListener('submit', async (e) => {
+            e.preventDefault(); if(!activeSchoolObject) return;
+            const oldPass = document.getElementById('gov-old-pass').value.trim();
+            const editSelection = document.querySelector('input[name="profile-edit-type"]:checked').value;
+
+            if (oldPass !== activeSchoolObject.password) { alert("Verification Failed: Current password mismatched."); return; }
+            let updatePayload = {};
+
+            if (editSelection === 'name') {
+                const nameTarg = document.getElementById('gov-new-name').value.trim();
+                const emailTarg = document.getElementById('gov-new-email').value.trim();
+                if (!nameTarg || !emailTarg) { alert("Please complete required input values."); return; }
+                updatePayload.name = nameTarg; updatePayload.email = emailTarg;
+                if (base64EditLogoString) updatePayload.logo = base64EditLogoString;
+                if (base64EditSignatureString) updatePayload.signature = base64EditSignatureString;
+            } else {
+                const passTarg = document.getElementById('gov-new-pass').value.trim();
+                if (!passTarg || passTarg.length < 6) { alert("Password must contain 6+ characters."); return; }
+                updatePayload.password = passTarg;
+            }
+
+            try {
+                await update(ref(db, `schools/${activeSchoolObject.id}`), updatePayload);
+                alert("School Profile Metrics Updated!");
+                Object.assign(activeSchoolObject, updatePayload);
+                document.getElementById('dash-school-display-name').innerText = activeSchoolObject.name;
+                formAccountGovernance.reset(); base64EditLogoString = ""; base64EditSignatureString = "";
+                populateSchoolDropdownMenu(); switchToDashboardView();
+            } catch(err) { alert("Failed to commit profile updates."); }
+        });
+
+        const teacherUploadForm = document.getElementById('teacher-upload-form');
+        teacherUploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); if (!activeSchoolObject) return alert("Session timed out.");
+            const targetStudentKey = document.getElementById('edit-student-target-key').value;
+            const examNo = document.getElementById('input-exam-no').value.trim();
+            const classLevel = document.getElementById('input-class').value;
+
+            let reportGrades = {};
+            subjects.forEach(sub => {
+                const chk = document.querySelector(`.subject-toggle[data-subject="${sub}"]`);
+                const inp = document.querySelector(`.subject-mark-input[data-subject="${sub}"]`);
+                if (chk && chk.checked && inp.value !== "") {
+                    const info = calculateManebGrade(inp.value, classLevel);
+                    reportGrades[sub] = { mark: parseInt(inp.value), grade: info.grade, remark: info.remark, point: info.numericPoint };
+                }
+            });
+
+            const studentPayload = {
+                examNo, name: document.getElementById('input-name').value.trim(), classLevel, 
+                dob: document.getElementById('input-dob').value, year: document.getElementById('input-year').value.trim(), 
+                term: document.getElementById('input-term').value, examType: document.getElementById('input-exam-type').value.trim(), 
+                promotionStatus: document.getElementById('input-pass-status').value, grades: reportGrades, schoolId: activeSchoolObject.id
+            };
+
+            const finalNodeKey = targetStudentKey || examNo.replace(/\//g, "-");
+            try {
+                await set(ref(db, `students/${activeSchoolObject.id}/${finalNodeKey}`), studentPayload);
+                alert("Student Record Matrix Published!");
+                teacherUploadForm.reset(); document.getElementById('edit-student-target-key').value = "";
+                currentSelectedDashboardForm = classLevel;
+                tabButtons.forEach(b => {
+                    if(b.getAttribute('data-form') === classLevel) b.classList.add('active'); else b.classList.remove('active');
+                });
+                switchToDashboardView();
+            } catch (err) { alert("Failed to store performance metrics."); }
+        });
+
+        document.getElementById('btn-school-logout').addEventListener('click', () => {
+            activeSchoolObject = null; document.getElementById('teacher-authenticated-dashboard').classList.add('hidden');
+            document.getElementById('school-login-box').classList.remove('hidden'); formSchoolLogin.reset();
+        });
+
+        const studentLookupForm = document.getElementById('student-lookup-form');
+        studentLookupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const schoolId = document.getElementById('selected-school-key').value; 
+            const examNo = document.getElementById('search-exam-no').value.trim();
+            const classLevel = document.getElementById('search-class').value;
+            const dob = document.getElementById('search-dob').value;
+
+            if(!schoolId) { alert("Please click to select a valid school option from the autocomplete list."); return; }
+
+            try {
+                const schoolSnapshot = await get(ref(db, `schools/${schoolId}`));
+                const allStudentsSnapshot = await get(ref(db, `students/${schoolId}`));
+
+                if (schoolSnapshot.exists() && allStudentsSnapshot.exists()) {
+                    const school = schoolSnapshot.val();
+                    const campusStudentsData = allStudentsSnapshot.val();
+
+                    let institutionalStudentsList = [];
+                    for(let k in campusStudentsData){ institutionalStudentsList.push(campusStudentsData[k]); }
+
+                    let specificClassFormCohortList = institutionalStudentsList.filter(s => s.classLevel === classLevel);
+                    specificClassFormCohortList.forEach(stud => {
+                        let sum = 0; if(stud.grades) { for(let sub in stud.grades) { sum += stud.grades[sub].mark; } }
+                        stud._cachedTotalSum = sum;
+                    });
+                    specificClassFormCohortList.sort((a,b) => b._cachedTotalSum - a._cachedTotalSum);
+
+                    const targetStudentNodeSafeKey = examNo.replace(/\//g, "-");
+                    const student = campusStudentsData[targetStudentNodeSafeKey];
+
+                    if (student && student.dob === dob && student.classLevel === classLevel) {
+                        const standardFormCohortPositionIndex = specificClassFormCohortList.findIndex(s => s.examNo === student.examNo) + 1;
+                        const classTotalCount = specificClassFormCohortList.length;
+
+                        activeQueriedResultObject = { student, school, position: standardFormCohortPositionIndex, classTotal: classTotalCount, cohortPeersList: specificClassFormCohortList };
+
+                        document.getElementById('res-school-header').innerText = school.name;
+                        document.getElementById('res-combined-metadata-subheader').innerText = `${student.examType} — ${student.year}`;
+                        document.getElementById('res-school-location-subheader').innerText = `${school.address}, ${school.location}, ${school.district}`;
+                        
+                        const logoFrame = document.getElementById('school-letterhead-logo-target');
+                        logoFrame.innerHTML = school.logo ? `<img src="${school.logo}" alt="School Logo">` : `<span style="font-size:10px; color:var(--text-muted);">NO LOGO</span>`;
+
+                        const sigFrame = document.getElementById('card-headteacher-sig-target');
+                        sigFrame.innerHTML = school.signature ? `<img src="${school.signature}" alt="Headteacher Signature">` : ``;
+
+                        document.getElementById('res-student-name').innerText = student.name;
+                        document.getElementById('res-student-meta').innerText = `Index Code: ${student.examNo} | Grade Level: ${student.classLevel} (${student.term})`;
+                        document.getElementById('res-pass-status').innerText = `Decision: ${student.promotionStatus}`;
+                        
+                        const watermark = document.getElementById('card-watermark');
+                        watermark.innerText = student.promotionStatus;
+                        watermark.className = student.promotionStatus === "Passed" ? "watermark passed" : "watermark failed";
+                        document.getElementById('res-pass-status').style.color = student.promotionStatus === "Passed" ? "var(--status-passed)" : "var(--status-failed)";
+
+                        let totalMarks = 0; let gradesListHTML = ""; let chartBarsHTML = ""; let activeGradesList = [];
+                        let colorIndexCounter = 0;
+
+                        for (let subName in student.grades) {
+                            const subObj = student.grades[subName]; totalMarks += subObj.mark;
+                            activeGradesList.push({ sub: subName, mark: subObj.mark, pointValue: subObj.point });
+
+                            let subjectRankValueCounter = 1;
+                            specificClassFormCohortList.forEach(peer => {
+                                if (peer.grades && peer.grades[subName] && peer.grades[subName].mark > subObj.mark) { subjectRankValueCounter++; }
+                            });
+
+                            gradesListHTML += `
+                                <div class="results-row">
+                                    <strong>${subName}</strong><span>${subObj.mark}%</span><span>${subObj.grade}</span><span>${subjectRankValueCounter}/${classTotalCount}</span><span>${subObj.remark}</span>
+                                </div>`;
+
+                            const assignedBarColor = graphColorPalette[colorIndexCounter % graphColorPalette.length];
+                            colorIndexCounter++;
+
+                            chartBarsHTML += `
+                                <div class="chart-column-node">
+                                    <span class="chart-lbl-percentage">${subObj.mark}%</span>
+                                    <div class="chart-bar-vertical-bg">
+                                        <div class="chart-bar-vertical-fill" style="height: ${subObj.mark}%; background-color: ${assignedBarColor};"></div>
+                                    </div>
+                                    <span class="chart-lbl-subject" title="${subName}">${subName}</span>
+                                </div>`;
+                        }
+
+                        document.getElementById('res-total-marks').innerText = `Total Aggregates: ${totalMarks}`;
+                        document.getElementById('res-class-position').innerText = `Position: ${standardFormCohortPositionIndex} / ${classTotalCount}`;
+                        document.getElementById('grades-list').innerHTML = gradesListHTML;
+                        document.getElementById('student-chart-bars-render').innerHTML = chartBarsHTML;
+
+                        const calculatedPointsResult = calculateManebBestSixPoints(activeGradesList, classLevel);
+                        document.getElementById('res-total-points').innerText = classLevel === "Form 3" || classLevel === "Form 4" ? `Points Earned: ${calculatedPointsResult}` : `Points: ${calculatedPointsResult}`;
+
+                        sectionStudent.classList.add('hidden'); navigationBar.classList.add('hidden'); separateResultsDashboard.classList.remove('hidden');
+                    } else { alert("Verification entry parameters mismatch!"); }
+                } else { alert("No matching records discovered."); }
+            } catch (err) { alert("Data structure processing fault."); }
+        });
+
+        // PDF Generation
+        document.getElementById('download-pdf-btn').addEventListener('click', () => {
+            if(!activeQueriedResultObject) return;
+            const { student, school, position, classTotal, cohortPeersList } = activeQueriedResultObject;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+
+            doc.setFillColor(2, 132, 199); doc.rect(0, 0, 210, 15, 'F'); 
+            doc.setTextColor(255, 255, 255); doc.setFont("Helvetica", "bold"); doc.setFontSize(10);
+            doc.text("MINISTRY OF EDUCATION — MALAWI NATIONAL SCHOLASTIC PLATFORM REPORT CARD", 10, 10);
+
+            doc.setTextColor(15, 23, 42); doc.setFont("Times", "bold"); doc.setFontSize(22);
+            doc.text(school.name.toUpperCase(), 105, 30, { align: "center" });
+            doc.setFont("Helvetica", "normal"); doc.setFontSize(10);
+            doc.text(`${school.address}, ${school.location}, ${school.district} District Jurisdiction`, 105, 36, { align: "center" });
+            
+            doc.setDrawColor(203, 213, 225); doc.setLineWidth(0.5); doc.line(10, 42, 200, 42);
+            doc.setFont("Helvetica", "bold"); doc.setFontSize(11); doc.text("STUDENT PROFILE DATA METRICS:", 10, 50);
+            
+            doc.setFont("Helvetica", "normal"); doc.setFontSize(10);
+            doc.text(`Full Name: ${student.name}`, 10, 56); doc.text(`Index Number: ${student.examNo}`, 10, 62); doc.text(`Grade Level: ${student.classLevel} (${student.term})`, 10, 68);
+            doc.text(`Date of Birth: ${student.dob}`, 110, 56); doc.text(`Assessment Year: ${student.year || '2026'}`, 110, 62); doc.text(`Classification: ${student.examType}`, 110, 68);
+
+            doc.setFillColor(241, 245, 249); doc.rect(10, 74, 190, 14, 'F'); doc.setDrawColor(203, 213, 225); doc.rect(10, 74, 190, 14, 'D');
+
+            let totalMarks = 0; let activeGradesList = [];
+            for (let subName in student.grades) { totalMarks += student.grades[subName].mark; activeGradesList.push({ sub: subName, mark: student.grades[subName].mark, pointValue: student.grades[subName].point }); }
+            const pointsString = calculateManebBestSixPoints(activeGradesList, student.classLevel);
+
+            doc.setFont("Helvetica", "bold"); doc.setFontSize(9);
+            doc.text(`Total Mark: ${totalMarks}`, 15, 82); doc.text(`Class Position: ${position} / ${classTotal}`, 65, 82); doc.text(`MANEB Points: ${pointsString}`, 115, 82); doc.text(`Decision: ${student.promotionStatus.toUpperCase()}`, 165, 82);
+
+            let tableCurrentY = 96; doc.setFillColor(15, 23, 42); doc.rect(10, tableCurrentY, 190, 8, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFont("Helvetica", "bold"); doc.setFontSize(9);
+            doc.text("SUBJECT COURSE", 15, tableCurrentY + 5); doc.text("SCORE", 75, tableCurrentY + 5); doc.text("GRADE", 100, tableCurrentY + 5); doc.text("RANK (IN CLASS)", 125, tableCurrentY + 5); doc.text("REMARKS", 165, tableCurrentY + 5);
+
+            tableCurrentY += 8; doc.setTextColor(15, 23, 42); doc.setFont("Helvetica", "normal");
+
+            for (let subName in student.grades) {
+                const subObj = student.grades[subName];
+                let subjectRankValueCounter = 1;
+                cohortPeersList.forEach(peer => { if (peer.grades && peer.grades[subName] && peer.grades[subName].mark > subObj.mark) { subjectRankValueCounter++; } });
+
+                if ((tableCurrentY / 8) % 2 === 0) { doc.setFillColor(248, 250, 252); doc.rect(10, tableCurrentY, 190, 7, 'F'); }
+                doc.text(subName, 15, tableCurrentY + 5); doc.text(`${subObj.mark}%`, 75, tableCurrentY + 5); doc.text(subObj.grade, 100, tableCurrentY + 5); doc.text(`${subjectRankValueCounter} / ${classTotal}`, 125, tableCurrentY + 5); doc.text(subObj.remark, 165, tableCurrentY + 5);
+                doc.setDrawColor(226, 232, 240); doc.line(10, tableCurrentY + 7, 200, tableCurrentY + 7);
+                tableCurrentY += 7;
+            }
+
+            doc.setFont("Helvetica", "bold"); doc.setFontSize(10); 
+            doc.text("HEADTEACHER'S SIGNATURE:", 120, tableCurrentY + 15);
+            if (school.signature) { try { doc.addImage(school.signature, 'PNG', 120, tableCurrentY + 18, 45, 12); } catch (e) { } }
+            doc.line(120, tableCurrentY + 30, 185, tableCurrentY + 30);
+
+            doc.save(`${student.name.replace(/\s+/g, '_')}_Report_Card.pdf`);
+        });
+
+        document.getElementById('close-dashboard-btn').addEventListener('click', () => {
+            separateResultsDashboard.classList.add('hidden'); sectionStudent.classList.remove('hidden'); navigationBar.classList.remove('hidden');
+            studentLookupForm.reset(); activeQueriedResultObject = null;
+        });
+    </script>
+</body>
+</html>
